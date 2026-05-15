@@ -26,6 +26,6 @@ const styles = StyleSheet.create({
   subtitle: {
     fontSize: typography.sizes.md,
     color: colors.muted,
-    marginTop: 10,
+    marginTop: 8,
   },
 })
