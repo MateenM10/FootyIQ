@@ -3,6 +3,7 @@ import { useState } from 'react'
 import colors from '../theme/colors'
 import typography from '../theme/typography'
 import questions from '../data/questions'
+import useStreak from '../hooks/useStreak'
 
 const getDailyQuestion = () => {
   const now = new Date()
@@ -17,12 +18,14 @@ export default function DailyScreen() {
   const question = getDailyQuestion()
   const [selected, setSelected] = useState(null)
   const [answered, setAnswered] = useState(false)
+  const { streak, incrementStreak } = useStreak()
 
   const handleAnswer = (index) => {
-    if (answered) return
-    setSelected(index)
-    setAnswered(true)
-  }
+  if (answered) return
+  setSelected(index)
+  setAnswered(true)
+  incrementStreak()
+}
 
   const getFeedback = () => {
     if (selected === question.correct) {
@@ -72,7 +75,9 @@ export default function DailyScreen() {
 
       <View style={styles.streakCard}>
         <Text style={styles.streakLabel}>Current Streak</Text>
-        <Text style={styles.streakValue}>1 day</Text>
+        <Text style={styles.streakValue}>
+          {streak} {streak === 1 ? 'day' : 'days'}
+        </Text>
       </View>
 
     </ScrollView>

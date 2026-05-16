@@ -1,8 +1,11 @@
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native'
+import { useNavigation } from '@react-navigation/native'
 import colors from '../theme/colors'
 import typography from '../theme/typography'
 
 export default function HomeScreen() {
+  const navigation = useNavigation()
+
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
 
@@ -14,7 +17,10 @@ export default function HomeScreen() {
       <View style={styles.card}>
         <Text style={styles.cardLabel}>Today's Challenge</Text>
         <Text style={styles.cardTitle}>How many players are on a soccer team?</Text>
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => navigation.navigate('Daily')}
+        >
           <Text style={styles.buttonText}>Play now →</Text>
         </TouchableOpacity>
       </View>
@@ -22,19 +28,31 @@ export default function HomeScreen() {
       <Text style={styles.sectionTitle}>What do you want to learn?</Text>
 
       <View style={styles.topicGrid}>
-        <TouchableOpacity style={styles.topicCard}>
+        <TouchableOpacity
+          style={styles.topicCard}
+          onPress={() => navigation.navigate('Learn')}
+        >
           <Text style={styles.topicIcon}>📖</Text>
           <Text style={styles.topicName}>Rules</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.topicCard}>
+        <TouchableOpacity
+          style={styles.topicCard}
+          onPress={() => navigation.navigate('Learn')}
+        >
           <Text style={styles.topicIcon}>🏃</Text>
           <Text style={styles.topicName}>Positions</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.topicCard}>
+        <TouchableOpacity
+          style={styles.topicCard}
+          onPress={() => navigation.navigate('Learn')}
+        >
           <Text style={styles.topicIcon}>🧠</Text>
           <Text style={styles.topicName}>Tactics</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.topicCard}>
+        <TouchableOpacity
+          style={styles.topicCard}
+          onPress={() => navigation.navigate('Learn')}
+        >
           <Text style={styles.topicIcon}>🏆</Text>
           <Text style={styles.topicName}>History</Text>
         </TouchableOpacity>
