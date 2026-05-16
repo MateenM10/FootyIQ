@@ -1,11 +1,22 @@
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native'
-import { useNavigation } from '@react-navigation/native'
+import { useNavigation, useFocusEffect } from '@react-navigation/native'
+import { useCallback } from 'react'
 import colors from '../theme/colors'
 import typography from '../theme/typography'
 import lessons from '../data/lessons'
+import useProgress from '../hooks/useProgress'
 
 export default function LearnScreen() {
   const navigation = useNavigation()
+  const { isComplete, completed, loadProgress } = useProgress()
+
+  useFocusEffect(
+    useCallback(() => {
+      loadProgress()
+    }, [])
+  )
+
+  const progress = completed.length / lessons.length
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
@@ -13,10 +24,22 @@ export default function LearnScreen() {
       <Text style={styles.heading}>Learn</Text>
       <Text style={styles.subheading}>Pick a lesson to get started</Text>
 
+      <View style={styles.progressCard}>
+        <View style={styles.progressHeader}>
+          <Text style={styles.progressLabel}>Your progress</Text>
+          <Text style={styles.progressCount}>
+            {completed.length}/{lessons.length} lessons
+          </Text>
+        </View>
+        <View style={styles.progressBarBg}>
+          <View style={[styles.progressBarFill, { width: (progress * 100) + '%' }]} />
+        </View>
+      </View>
+
       {lessons.map(lesson => (
         <TouchableOpacity
           key={lesson.id}
-          style={styles.lessonCard}
+          style={[styles.lessonCard, isComplete(lesson.id) && styles.lessonCardComplete]}
           onPress={() => navigation.navigate('Lesson', { lesson })}
         >
           <Text style={styles.lessonIcon}>{lesson.icon}</Text>
@@ -24,7 +47,10 @@ export default function LearnScreen() {
             <Text style={styles.lessonTitle}>{lesson.title}</Text>
             <Text style={styles.lessonMeta}>{lesson.category} · {lesson.duration}</Text>
           </View>
-          <Text style={styles.arrow}>→</Text>
+          {isComplete(lesson.id)
+            ? <Text style={styles.checkmark}>✓</Text>
+            : <Text style={styles.arrow}>→</Text>
+          }
         </TouchableOpacity>
       ))}
 
@@ -50,7 +76,40 @@ const styles = StyleSheet.create({
   subheading: {
     fontSize: typography.sizes.md,
     color: colors.muted,
-    marginBottom: 32,
+    marginBottom: 24,
+  },
+  progressCard: {
+    backgroundColor: colors.surface,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: colors.border,
+    padding: 16,
+    marginBottom: 24,
+  },
+  progressHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 12,
+  },
+  progressLabel: {
+    fontSize: typography.sizes.sm,
+    color: colors.muted,
+    fontWeight: typography.weights.medium,
+  },
+  progressCount: {
+    fontSize: typography.sizes.sm,
+    color: colors.accent,
+    fontWeight: typography.weights.bold,
+  },
+  progressBarBg: {
+    height: 6,
+    backgroundColor: colors.border,
+    borderRadius: 4,
+  },
+  progressBarFill: {
+    height: 6,
+    backgroundColor: colors.accent,
+    borderRadius: 4,
   },
   lessonCard: {
     backgroundColor: colors.surface,
@@ -62,6 +121,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 12,
     gap: 14,
+  },
+  lessonCardComplete: {
+    borderColor: '#00C87A44',
+    backgroundColor: '#00C87A0A',
   },
   lessonIcon: {
     fontSize: 28,
@@ -82,5 +145,10 @@ const styles = StyleSheet.create({
   arrow: {
     fontSize: typography.sizes.lg,
     color: colors.accent,
+  },
+  checkmark: {
+    fontSize: typography.sizes.lg,
+    color: colors.accent,
+    fontWeight: typography.weights.bold,
   },
 })

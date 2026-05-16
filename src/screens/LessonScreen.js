@@ -1,9 +1,18 @@
-import { View, Text, StyleSheet, ScrollView } from 'react-native'
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native'
+import { useNavigation } from '@react-navigation/native'
 import colors from '../theme/colors'
 import typography from '../theme/typography'
+import useProgress from '../hooks/useProgress'
 
 export default function LessonScreen({ route }) {
   const { lesson } = route.params
+  const navigation = useNavigation()
+  const { isComplete, markComplete } = useProgress()
+
+  const handleComplete = async () => {
+    await markComplete(lesson.id)
+    navigation.goBack()
+  }
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
@@ -21,6 +30,16 @@ export default function LessonScreen({ route }) {
         </View>
       ))}
 
+      <TouchableOpacity
+        style={[styles.button, isComplete(lesson.id) && styles.buttonDone]}
+        onPress={handleComplete}
+        disabled={isComplete(lesson.id)}
+      >
+        <Text style={styles.buttonText}>
+          {isComplete(lesson.id) ? '✓ Completed' : 'Mark as complete'}
+        </Text>
+      </TouchableOpacity>
+
     </ScrollView>
   )
 }
@@ -33,6 +52,7 @@ const styles = StyleSheet.create({
   content: {
     padding: 24,
     paddingTop: 60,
+    paddingBottom: 40,
   },
   category: {
     fontSize: typography.sizes.xs,
@@ -71,5 +91,22 @@ const styles = StyleSheet.create({
     fontSize: typography.sizes.md,
     color: colors.muted,
     lineHeight: 26,
+  },
+  button: {
+    backgroundColor: colors.accent,
+    borderRadius: 10,
+    padding: 16,
+    alignItems: 'center',
+    marginTop: 12,
+  },
+  buttonDone: {
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.accent,
+  },
+  buttonText: {
+    color: colors.black,
+    fontWeight: typography.weights.bold,
+    fontSize: typography.sizes.md,
   },
 })
