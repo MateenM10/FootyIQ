@@ -6,6 +6,7 @@ import HomeScreen from '../screens/HomeScreen'
 import LearnNavigator from './LearnNavigator'
 import DailyScreen from '../screens/DailyScreen'
 import PremiumScreen from '../screens/PremiumScreen'
+import WatchNavigator from './WatchNavigator'
 import colors from '../theme/colors'
 import typography from '../theme/typography'
 
@@ -40,6 +41,8 @@ export default function AppNavigator() {
               iconName = focused ? 'book' : 'book-outline'
             } else if (route.name === 'Daily') {
               iconName = focused ? 'flash' : 'flash-outline'
+            } else if (route.name === 'Watch') {
+              iconName = focused ? 'tv' : 'tv-outline'
             } else if (route.name === 'Premium') {
               iconName = focused ? 'star' : 'star-outline'
             }
@@ -51,6 +54,7 @@ export default function AppNavigator() {
         <Tab.Screen name="Home" component={HomeScreen} />
         <Tab.Screen name="Learn" component={LearnNavigator} />
         <Tab.Screen name="Daily" component={DailyScreen} />
+        <Tab.Screen name="Watch" component={WatchNavigator} />
         <Tab.Screen name="Premium" component={PremiumScreen} />
       </Tab.Navigator>
     </NavigationContainer>
