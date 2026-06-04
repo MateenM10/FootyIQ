@@ -1,6 +1,7 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import LearnScreen from '../screens/LearnScreen'
 import LessonScreen from '../screens/LessonScreen'
+import LessonQuizScreen from '../screens/LessonQuizScreen'
 import colors from '../theme/colors'
 
 const Stack = createNativeStackNavigator()
@@ -28,6 +29,11 @@ export default function LearnNavigator() {
         options={({ route }) => ({
           title: route.params.lesson.title,
         })}
+      />
+      <Stack.Screen
+        name="LessonQuiz"
+        component={LessonQuizScreen}
+        options={{ title: 'Quick Quiz', headerBackVisible: false }}
       />
     </Stack.Navigator>
   )

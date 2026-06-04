@@ -1,6 +1,6 @@
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native'
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native'
 import { useNavigation, useFocusEffect } from '@react-navigation/native'
-import { useCallback } from 'react'
+import { useCallback, useState } from 'react'
 import colors from '../theme/colors'
 import typography from '../theme/typography'
 import useStreak from '../hooks/useStreak'
@@ -11,14 +11,27 @@ export default function HomeScreen() {
   const navigation = useNavigation()
   const { streak } = useStreak()
   const { completed, loadProgress } = useProgress()
+  const [loading, setLoading] = useState(true)
 
   useFocusEffect(
     useCallback(() => {
-      loadProgress()
+      const load = async () => {
+        await loadProgress()
+        setLoading(false)
+      }
+      load()
     }, [])
   )
 
   const progress = completed.length / lessons.length
+
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color={colors.accent} />
+      </View>
+    )
+  }
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
@@ -39,7 +52,7 @@ export default function HomeScreen() {
         </View>
         <View style={styles.statCard}>
           <Text style={styles.statValue}>
-            {lessons.length === 0 ? '0%' : Math.round((completed.length / lessons.length) * 100) + '%'}
+            {Math.round(progress * 100)}%
           </Text>
           <Text style={styles.statLabel}>⭐ Complete</Text>
         </View>
@@ -104,6 +117,12 @@ export default function HomeScreen() {
 }
 
 const styles = StyleSheet.create({
+  loadingContainer: {
+    flex: 1,
+    backgroundColor: colors.black,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   container: {
     flex: 1,
     backgroundColor: colors.black,

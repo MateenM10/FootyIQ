@@ -3,15 +3,22 @@ import { useNavigation } from '@react-navigation/native'
 import colors from '../theme/colors'
 import typography from '../theme/typography'
 import useProgress from '../hooks/useProgress'
+import lessonQuizzes from '../data/lessonQuizzes'
 
 export default function LessonScreen({ route }) {
   const { lesson } = route.params
   const navigation = useNavigation()
-  const { isComplete, markComplete } = useProgress()
+  const { isComplete } = useProgress()
 
-  const handleComplete = async () => {
-    await markComplete(lesson.id)
-    navigation.goBack()
+  const hasQuiz = lessonQuizzes[lesson.id] !== undefined
+
+  const handleFinish = () => {
+    if (hasQuiz) {
+      navigation.navigate('LessonQuiz', {
+        lesson,
+        questions: lessonQuizzes[lesson.id],
+      })
+    }
   }
 
   return (
@@ -30,15 +37,18 @@ export default function LessonScreen({ route }) {
         </View>
       ))}
 
-      <TouchableOpacity
-        style={[styles.button, isComplete(lesson.id) && styles.buttonDone]}
-        onPress={handleComplete}
-        disabled={isComplete(lesson.id)}
-      >
-        <Text style={styles.buttonText}>
-          {isComplete(lesson.id) ? '✓ Completed' : 'Mark as complete'}
-        </Text>
-      </TouchableOpacity>
+      {isComplete(lesson.id) ? (
+        <View style={styles.completedRow}>
+          <Text style={styles.completedText}>✓ Completed</Text>
+          <TouchableOpacity style={styles.retakeButton} onPress={handleFinish}>
+            <Text style={styles.retakeButtonText}>Retake quiz</Text>
+          </TouchableOpacity>
+        </View>
+      ) : (
+        <TouchableOpacity style={styles.button} onPress={handleFinish}>
+          <Text style={styles.buttonText}>Take the quiz →</Text>
+        </TouchableOpacity>
+      )}
 
     </ScrollView>
   )
@@ -99,14 +109,36 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 12,
   },
-  buttonDone: {
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.accent,
-  },
   buttonText: {
     color: colors.black,
     fontWeight: typography.weights.bold,
     fontSize: typography.sizes.md,
+  },
+  completedRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginTop: 12,
+    padding: 16,
+    backgroundColor: colors.surface,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: colors.accent,
+  },
+  completedText: {
+    color: colors.accent,
+    fontWeight: typography.weights.bold,
+    fontSize: typography.sizes.md,
+  },
+  retakeButton: {
+    backgroundColor: colors.accent,
+    borderRadius: 8,
+    padding: 8,
+    paddingHorizontal: 14,
+  },
+  retakeButtonText: {
+    color: colors.black,
+    fontWeight: typography.weights.bold,
+    fontSize: typography.sizes.sm,
   },
 })
