@@ -30,6 +30,7 @@ const matches = [
       'Set pieces — both teams are dangerous from corners',
       'Substitutions around the 60 minute mark',
     ],
+    keyTerms: ['highPress', 'buildUp', 'transition', 'fullback', 'setPiece'],
   },
   {
     id: '2',
@@ -58,6 +59,7 @@ const matches = [
       'Second balls in the midfield',
       'Crowd energy when Bellingham gets on the ball',
     ],
+    keyTerms: ['press', 'transition', 'counter', 'falseNine', 'buildUp'],
   },
 ]
 

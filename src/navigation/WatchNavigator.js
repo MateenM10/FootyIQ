@@ -14,6 +14,7 @@ export default function WatchNavigator() {
         },
         headerTintColor: colors.white,
         headerShadowVisible: false,
+        animation: 'slide_from_right',
       }}
     >
       <Stack.Screen

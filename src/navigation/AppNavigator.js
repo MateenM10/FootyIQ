@@ -32,6 +32,8 @@ export default function AppNavigator() {
             fontSize: typography.sizes.xs,
             fontWeight: typography.weights.medium,
           },
+          tabBarHideOnKeyboard: true,
+          lazy: true,
           tabBarIcon: ({ focused, color, size }) => {
             let iconName
 

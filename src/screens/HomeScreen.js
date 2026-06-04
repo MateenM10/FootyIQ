@@ -41,22 +41,30 @@ export default function HomeScreen() {
         <Text style={styles.tagline}>Learn soccer like a pro</Text>
       </View>
 
-      <View style={styles.statsRow}>
-        <View style={styles.statCard}>
-          <Text style={styles.statValue}>{streak}</Text>
-          <Text style={styles.statLabel}>🔥 Day streak</Text>
-        </View>
-        <View style={styles.statCard}>
-          <Text style={styles.statValue}>{completed.length}/{lessons.length}</Text>
-          <Text style={styles.statLabel}>📖 Lessons done</Text>
-        </View>
-        <View style={styles.statCard}>
-          <Text style={styles.statValue}>
-            {Math.round(progress * 100)}%
+      {completed.length === 0 && streak === 0 ? (
+        <View style={styles.emptyCard}>
+          <Text style={styles.emptyIcon}>⚽</Text>
+          <Text style={styles.emptyTitle}>Welcome to FootyIQ</Text>
+          <Text style={styles.emptyText}>
+            Complete your first lesson and daily challenge to start tracking your progress.
           </Text>
-          <Text style={styles.statLabel}>⭐ Complete</Text>
         </View>
-      </View>
+      ) : (
+        <View style={styles.statsRow}>
+          <View style={styles.statCard}>
+            <Text style={styles.statValue}>{streak}</Text>
+            <Text style={styles.statLabel}>🔥 Day streak</Text>
+          </View>
+          <View style={styles.statCard}>
+            <Text style={styles.statValue}>{completed.length}/{lessons.length}</Text>
+            <Text style={styles.statLabel}>📖 Lessons done</Text>
+          </View>
+          <View style={styles.statCard}>
+            <Text style={styles.statValue}>{Math.round(progress * 100)}%</Text>
+            <Text style={styles.statLabel}>⭐ Complete</Text>
+          </View>
+        </View>
+      )}
 
       <View style={styles.progressCard}>
         <View style={styles.progressHeader}>
@@ -146,6 +154,31 @@ const styles = StyleSheet.create({
     fontSize: typography.sizes.md,
     color: colors.muted,
     marginTop: 4,
+  },
+  emptyCard: {
+    backgroundColor: colors.surface,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: colors.border,
+    padding: 24,
+    alignItems: 'center',
+    marginBottom: 16,
+    gap: 10,
+  },
+  emptyIcon: {
+    fontSize: 40,
+  },
+  emptyTitle: {
+    fontSize: typography.sizes.lg,
+    fontWeight: typography.weights.bold,
+    color: colors.white,
+    textAlign: 'center',
+  },
+  emptyText: {
+    fontSize: typography.sizes.sm,
+    color: colors.muted,
+    textAlign: 'center',
+    lineHeight: 22,
   },
   statsRow: {
     flexDirection: 'row',

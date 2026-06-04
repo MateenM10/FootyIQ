@@ -16,6 +16,7 @@ export default function LearnNavigator() {
         headerTintColor: colors.white,
         headerBackTitle: 'Back',
         headerShadowVisible: false,
+        animation: 'slide_from_right',
       }}
     >
       <Stack.Screen
@@ -33,7 +34,11 @@ export default function LearnNavigator() {
       <Stack.Screen
         name="LessonQuiz"
         component={LessonQuizScreen}
-        options={{ title: 'Quick Quiz', headerBackVisible: false }}
+        options={{
+          title: 'Quick Quiz',
+          headerBackVisible: false,
+          animation: 'slide_from_bottom',
+        }}
       />
     </Stack.Navigator>
   )
