@@ -4,6 +4,7 @@ import { useCallback } from 'react'
 import colors from '../theme/colors'
 import typography from '../theme/typography'
 import lessons from '../data/lessons'
+import tracks from '../data/tracks'
 import useProgress from '../hooks/useProgress'
 
 export default function LearnScreen() {
@@ -22,7 +23,7 @@ export default function LearnScreen() {
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
 
       <Text style={styles.heading}>Learn</Text>
-      <Text style={styles.subheading}>Pick a lesson to get started</Text>
+      <Text style={styles.subheading}>Work through the tracks at your own pace</Text>
 
       <View style={styles.progressCard}>
         <View style={styles.progressHeader}>
@@ -36,23 +37,44 @@ export default function LearnScreen() {
         </View>
       </View>
 
-      {lessons.map(lesson => (
-        <TouchableOpacity
-          key={lesson.id}
-          style={[styles.lessonCard, isComplete(lesson.id) && styles.lessonCardComplete]}
-          onPress={() => navigation.navigate('Lesson', { lesson })}
-        >
-          <Text style={styles.lessonIcon}>{lesson.icon}</Text>
-          <View style={styles.lessonInfo}>
-            <Text style={styles.lessonTitle}>{lesson.title}</Text>
-            <Text style={styles.lessonMeta}>{lesson.category} · {lesson.duration}</Text>
+      {tracks.map(track => {
+        const trackLessons = lessons.filter(lesson => lesson.track === track.id)
+        const doneInTrack = trackLessons.filter(lesson => isComplete(lesson.id)).length
+
+        return (
+          <View key={track.id} style={styles.trackSection}>
+            <View style={styles.trackHeader}>
+              <Text style={styles.trackIcon}>{track.icon}</Text>
+              <View style={styles.trackHeaderText}>
+                <Text style={styles.trackTitle}>{track.title}</Text>
+                <Text style={styles.trackDesc}>{track.description}</Text>
+              </View>
+            </View>
+
+            <Text style={styles.trackProgress}>
+              {doneInTrack}/{trackLessons.length} complete
+            </Text>
+
+            {trackLessons.map(lesson => (
+              <TouchableOpacity
+                key={lesson.id}
+                style={[styles.lessonCard, isComplete(lesson.id) && styles.lessonCardComplete]}
+                onPress={() => navigation.navigate('Lesson', { lesson })}
+              >
+                <Text style={styles.lessonIcon}>{lesson.icon}</Text>
+                <View style={styles.lessonInfo}>
+                  <Text style={styles.lessonTitle}>{lesson.title}</Text>
+                  <Text style={styles.lessonMeta}>{lesson.category} · {lesson.duration}</Text>
+                </View>
+                {isComplete(lesson.id)
+                  ? <Text style={styles.checkmark}>✓</Text>
+                  : <Text style={styles.arrow}>→</Text>
+                }
+              </TouchableOpacity>
+            ))}
           </View>
-          {isComplete(lesson.id)
-            ? <Text style={styles.checkmark}>✓</Text>
-            : <Text style={styles.arrow}>→</Text>
-          }
-        </TouchableOpacity>
-      ))}
+        )
+      })}
 
     </ScrollView>
   )
@@ -66,6 +88,7 @@ const styles = StyleSheet.create({
   content: {
     padding: 24,
     paddingTop: 60,
+    paddingBottom: 40,
   },
   heading: {
     fontSize: typography.sizes.xxl,
@@ -84,7 +107,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.border,
     padding: 16,
-    marginBottom: 24,
+    marginBottom: 32,
   },
   progressHeader: {
     flexDirection: 'row',
@@ -110,6 +133,40 @@ const styles = StyleSheet.create({
     height: 6,
     backgroundColor: colors.accent,
     borderRadius: 4,
+  },
+  trackSection: {
+    marginBottom: 32,
+  },
+  trackHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 14,
+    marginBottom: 8,
+  },
+  trackIcon: {
+    fontSize: 30,
+  },
+  trackHeaderText: {
+    flex: 1,
+  },
+  trackTitle: {
+    fontSize: typography.sizes.lg,
+    fontWeight: typography.weights.bold,
+    color: colors.white,
+    marginBottom: 2,
+  },
+  trackDesc: {
+    fontSize: typography.sizes.sm,
+    color: colors.muted,
+    lineHeight: 20,
+  },
+  trackProgress: {
+    fontSize: typography.sizes.xs,
+    color: colors.accent,
+    fontWeight: typography.weights.bold,
+    textTransform: 'uppercase',
+    letterSpacing: 1,
+    marginBottom: 14,
   },
   lessonCard: {
     backgroundColor: colors.surface,

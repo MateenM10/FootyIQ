@@ -26,6 +26,65 @@ const lessonQuizzes = {
       correct: 2,
     },
   ],
+  '3': [
+    {
+      question: 'What does a yellow card represent?',
+      options: [
+        'Immediate dismissal',
+        'A warning for serious foul play or dissent',
+        'A penalty kick for the other team',
+        'A free kick from the halfway line',
+      ],
+      correct: 1,
+    },
+    {
+      question: 'How many yellow cards result in a red card?',
+      options: ['1', '2', '3', '4'],
+      correct: 1,
+    },
+    {
+      question: 'What is an indirect free kick?',
+      options: [
+        'A free kick that can go straight into the goal',
+        'A free kick that must touch another player before going in',
+        'A free kick taken from the penalty spot',
+        'A free kick awarded for offside',
+      ],
+      correct: 1,
+    },
+  ],
+  '7': [
+    {
+      question: 'When is a player in an offside position?',
+      options: [
+        'When they are behind the ball',
+        'When they are nearer the goal line than both the ball and the second last defender',
+        'When they are inside the penalty area',
+        'When they handle the ball',
+      ],
+      correct: 1,
+    },
+    {
+      question: 'Is being in an offside position always an offence?',
+      options: [
+        'Yes, always',
+        'No, only if they get involved in the play',
+        'Only in the second half',
+        'Only on free kicks',
+      ],
+      correct: 1,
+    },
+    {
+      question: 'Why does the offside rule exist?',
+      options: [
+        'To make games shorter',
+        'To stop attackers from just waiting near the goal',
+        'To help goalkeepers warm up',
+        'To reduce the number of fouls',
+      ],
+      correct: 1,
+    },
+  ],
   '2': [
     {
       question: 'Which player is the only one allowed to use their hands?',
@@ -53,29 +112,66 @@ const lessonQuizzes = {
       correct: 2,
     },
   ],
-  '3': [
+  '8': [
     {
-      question: 'What does a yellow card represent?',
+      question: 'Where is the goalkeeper allowed to use their hands?',
       options: [
-        'Immediate dismissal',
-        'A warning for serious foul play or dissent',
-        'A penalty kick for the other team',
-        'A free kick from the halfway line',
+        'Anywhere on the pitch',
+        'Only inside their own penalty area',
+        'Only in the second half',
+        'Nowhere on the pitch',
       ],
       correct: 1,
     },
     {
-      question: 'How many yellow cards result in a red card?',
-      options: ['1', '2', '3', '4'],
+      question: 'Besides shot stopping, what is a key modern goalkeeper skill?',
+      options: [
+        'Scoring goals',
+        'Distribution and passing with their feet',
+        'Taking corner kicks',
+        'Refereeing the match',
+      ],
       correct: 1,
     },
     {
-      question: 'What is an indirect free kick?',
+      question: 'What does a sweeper keeper do?',
       options: [
-        'A free kick that can go straight into the goal',
-        'A free kick that must touch another player before going in',
-        'A free kick taken from the penalty spot',
-        'A free kick awarded for offside',
+        'Cleans the pitch at half time',
+        'Rushes out of goal to clear danger behind a high line',
+        'Plays as an extra striker',
+        'Never leaves the goal line',
+      ],
+      correct: 1,
+    },
+  ],
+  '9': [
+    {
+      question: 'Where do fullbacks play?',
+      options: [
+        'Through the middle of the pitch',
+        'On the left and right edges of the back line',
+        'In attack only',
+        'In goal',
+      ],
+      correct: 1,
+    },
+    {
+      question: 'What is an inverted fullback?',
+      options: [
+        'A fullback who plays upside down',
+        'A fullback who moves inside into midfield in possession',
+        'A fullback who only ever defends',
+        'A second goalkeeper',
+      ],
+      correct: 1,
+    },
+    {
+      question: 'Despite all the attacking, what is a fullbacks first job?',
+      options: [
+        'To score goals',
+        'To defend',
+        'To take throw ins',
+        'To coach the team',
       ],
       correct: 1,
     },
@@ -139,6 +235,38 @@ const lessonQuizzes = {
       correct: 1,
     },
   ],
+  '10': [
+    {
+      question: 'What is an overload in attack?',
+      options: [
+        'Making too many passes',
+        'Having more players than defenders in one area',
+        'A type of foul',
+        'A long range shot',
+      ],
+      correct: 1,
+    },
+    {
+      question: 'Why do teams switch play from one side to the other?',
+      options: [
+        'To waste time',
+        'To stretch the defense and find space on the far side',
+        'To slow the game down',
+        'To defend a lead',
+      ],
+      correct: 1,
+    },
+    {
+      question: 'What matters most for a good final ball?',
+      options: [
+        'Pure power',
+        'Timing and quality',
+        'How far it travels',
+        'How high it goes',
+      ],
+      correct: 1,
+    },
+  ],
   '6': [
     {
       question: 'How often is the FIFA World Cup held?',
@@ -164,6 +292,60 @@ const lessonQuizzes = {
         'A youth World Cup',
       ],
       correct: 2,
+    },
+  ],
+  '11': [
+    {
+      question: 'How often is the World Cup held?',
+      options: ['Every year', 'Every 2 years', 'Every 4 years', 'Every 10 years'],
+      correct: 2,
+    },
+    {
+      question: 'Where was the first World Cup held in 1930?',
+      options: ['Brazil', 'Uruguay', 'Italy', 'England'],
+      correct: 1,
+    },
+    {
+      question: 'What is special about the 2026 World Cup?',
+      options: [
+        'It has only 16 teams',
+        'It is hosted by three nations and features 48 teams',
+        'It is the first ever World Cup',
+        'It is held every single year',
+      ],
+      correct: 1,
+    },
+  ],
+  '12': [
+    {
+      question: 'Who do players represent for most of the year?',
+      options: [
+        'Their countries',
+        'Their clubs',
+        'Their home cities',
+        'Their schools',
+      ],
+      correct: 1,
+    },
+    {
+      question: 'How is a domestic league title usually won?',
+      options: [
+        'A single final match',
+        'The team with the most points over the season',
+        'A penalty shootout',
+        'A coin toss',
+      ],
+      correct: 1,
+    },
+    {
+      question: 'What is relegation?',
+      options: [
+        'Winning the league',
+        'Dropping down to a lower division',
+        'Qualifying for the Champions League',
+        'Signing a new player',
+      ],
+      correct: 1,
     },
   ],
 }

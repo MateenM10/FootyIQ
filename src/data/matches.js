@@ -8,6 +8,8 @@ const matches = [
     competition: 'Premier League',
     kickoff: 'Sun 4:30 PM',
     status: 'upcoming',
+    homeFormation: '4-3-3',
+    awayFormation: '4-2-3-1',
     storyline: 'The title race could be decided here. Arsenal need a win to stay in touch with City at the top of the table.',
     keyBattles: [
       {
@@ -41,6 +43,8 @@ const matches = [
     competition: 'La Liga',
     kickoff: 'Sat 8:00 PM',
     status: 'upcoming',
+    homeFormation: '4-3-1-2',
+    awayFormation: '4-3-3',
     storyline: 'El Clasico. The biggest game in club football. History, rivalry and bragging rights all on the line.',
     keyBattles: [
       {
