@@ -1,6 +1,7 @@
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native'
 import { useState, useCallback } from 'react'
 import { useFocusEffect } from '@react-navigation/native'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 import * as Haptics from 'expo-haptics'
 import colors from '../theme/colors'
 import typography from '../theme/typography'
@@ -33,14 +34,44 @@ export default function DailyScreen() {
   useFocusEffect(
     useCallback(() => {
       loadStreak()
+      loadAnsweredState()
     }, [])
   )
 
-  const handleAnswer = (index) => {
+  const loadAnsweredState = async () => {
+    try {
+      const saved = await AsyncStorage.getItem('dailyAnswer')
+      if (saved) {
+        const { date, selected: savedSelected } = JSON.parse(saved)
+        const today = new Date().toDateString()
+        if (date === today) {
+          setSelected(savedSelected)
+          setAnswered(true)
+        } else {
+          setSelected(null)
+          setAnswered(false)
+        }
+      }
+    } catch (e) {
+      console.log(e)
+    }
+  }
+
+  const handleAnswer = async (index) => {
     if (answered) return
     setSelected(index)
     setAnswered(true)
     incrementStreak()
+
+    try {
+      const today = new Date().toDateString()
+      await AsyncStorage.setItem('dailyAnswer', JSON.stringify({
+        date: today,
+        selected: index,
+      }))
+    } catch (e) {
+      console.log(e)
+    }
 
     if (index === question.correct) {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)
@@ -83,6 +114,7 @@ export default function DailyScreen() {
             key={index}
             style={getOptionStyle(index)}
             onPress={() => handleAnswer(index)}
+            disabled={answered}
           >
             <Text style={getOptionTextStyle(index)}>{option}</Text>
           </TouchableOpacity>

@@ -1,6 +1,6 @@
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native'
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native'
 import { useNavigation, useFocusEffect } from '@react-navigation/native'
-import { useCallback } from 'react'
+import { useCallback, useState } from 'react'
 import colors from '../theme/colors'
 import typography from '../theme/typography'
 import lessons from '../data/lessons'
@@ -10,14 +10,27 @@ import useProgress from '../hooks/useProgress'
 export default function LearnScreen() {
   const navigation = useNavigation()
   const { isComplete, completed, loadProgress } = useProgress()
+  const [loading, setLoading] = useState(true)
 
   useFocusEffect(
     useCallback(() => {
-      loadProgress()
+      const load = async () => {
+        await loadProgress()
+        setLoading(false)
+      }
+      load()
     }, [])
   )
 
   const progress = completed.length / lessons.length
+
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color={colors.accent} />
+      </View>
+    )
+  }
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
@@ -81,6 +94,12 @@ export default function LearnScreen() {
 }
 
 const styles = StyleSheet.create({
+  loadingContainer: {
+    flex: 1,
+    backgroundColor: colors.black,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   container: {
     flex: 1,
     backgroundColor: colors.black,
