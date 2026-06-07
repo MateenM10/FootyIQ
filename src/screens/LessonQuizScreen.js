@@ -1,6 +1,7 @@
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native'
 import { useState } from 'react'
 import { useNavigation } from '@react-navigation/native'
+import * as Haptics from 'expo-haptics'
 import colors from '../theme/colors'
 import typography from '../theme/typography'
 import useProgress from '../hooks/useProgress'
@@ -23,8 +24,12 @@ export default function LessonQuizScreen({ route }) {
     if (answered) return
     setSelected(index)
     setAnswered(true)
+
     if (index === currentQuestion.correct) {
       setScore(score + 1)
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)
+    } else {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error)
     }
   }
 

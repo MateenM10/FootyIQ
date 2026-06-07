@@ -1,7 +1,7 @@
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native'
+import { useState, useRef } from 'react'
+import { View, Text, StyleSheet, TouchableOpacity, Animated } from 'react-native'
 import colors from '../theme/colors'
 import typography from '../theme/typography'
-import { useState } from 'react'
 
 const slides = [
   {
@@ -20,21 +20,41 @@ const slides = [
     desc: 'One question every day. Build your streak and test your knowledge.',
   },
   {
-    icon: '🏆',
-    title: 'Go premium',
-    desc: 'Unlock live match breakdowns, multiplayer quizzes and deep tactics.',
+    icon: '📺',
+    title: 'Watch smarter',
+    desc: 'Real match results with plain-English breakdowns of what happened and why.',
   },
 ]
 
 export default function OnboardingScreen({ onDone }) {
   const [index, setIndex] = useState(0)
+  const fadeAnim = useRef(new Animated.Value(1)).current
+
+  const transition = (callback) => {
+    Animated.timing(fadeAnim, {
+      toValue: 0,
+      duration: 150,
+      useNativeDriver: true,
+    }).start(() => {
+      callback()
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 200,
+        useNativeDriver: true,
+      }).start()
+    })
+  }
 
   const handleNext = () => {
     if (index < slides.length - 1) {
-      setIndex(index + 1)
+      transition(() => setIndex(index + 1))
     } else {
-      onDone()
+      transition(() => onDone())
     }
+  }
+
+  const handleSkip = () => {
+    transition(() => onDone())
   }
 
   const slide = slides[index]
@@ -42,29 +62,33 @@ export default function OnboardingScreen({ onDone }) {
 
   return (
     <View style={styles.container}>
+
       <View style={styles.dotsRow}>
         {slides.map((_, i) => (
           <View key={i} style={[styles.dot, i === index && styles.activeDot]} />
         ))}
       </View>
 
-      <View style={styles.content}>
+      <Animated.View style={[styles.content, { opacity: fadeAnim }]}>
         <Text style={styles.icon}>{slide.icon}</Text>
         <Text style={styles.title}>{slide.title}</Text>
         <Text style={styles.desc}>{slide.desc}</Text>
+      </Animated.View>
+
+      <View style={styles.actions}>
+        <TouchableOpacity style={styles.button} onPress={handleNext}>
+          <Text style={styles.buttonText}>
+            {isLast ? 'Get started' : 'Next'}
+          </Text>
+        </TouchableOpacity>
+
+        {!isLast && (
+          <TouchableOpacity onPress={handleSkip}>
+            <Text style={styles.skip}>Skip</Text>
+          </TouchableOpacity>
+        )}
       </View>
 
-      <TouchableOpacity style={styles.button} onPress={handleNext}>
-        <Text style={styles.buttonText}>
-          {isLast ? 'Get started' : 'Next'}
-        </Text>
-      </TouchableOpacity>
-
-      {!isLast && (
-        <TouchableOpacity onPress={onDone}>
-          <Text style={styles.skip}>Skip</Text>
-        </TouchableOpacity>
-      )}
     </View>
   )
 }
@@ -74,9 +98,9 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.black,
     padding: 24,
-    justifyContent: 'space-between',
     paddingTop: 80,
     paddingBottom: 60,
+    justifyContent: 'space-between',
   },
   dotsRow: {
     flexDirection: 'row',
@@ -98,6 +122,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: 20,
+    paddingHorizontal: 16,
   },
   icon: {
     fontSize: 80,
@@ -114,14 +139,15 @@ const styles = StyleSheet.create({
     color: colors.muted,
     textAlign: 'center',
     lineHeight: 26,
-    paddingHorizontal: 16,
+  },
+  actions: {
+    gap: 16,
   },
   button: {
     backgroundColor: colors.accent,
     borderRadius: 10,
     padding: 16,
     alignItems: 'center',
-    marginBottom: 16,
   },
   buttonText: {
     color: colors.black,

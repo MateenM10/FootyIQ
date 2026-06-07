@@ -1,5 +1,7 @@
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native'
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
+import { useFocusEffect } from '@react-navigation/native'
+import * as Haptics from 'expo-haptics'
 import colors from '../theme/colors'
 import typography from '../theme/typography'
 import questions from '../data/questions'
@@ -14,23 +16,41 @@ const getDailyQuestion = () => {
   return questions[dayOfYear % questions.length]
 }
 
+const getStreakLabel = (streak) => {
+  if (streak === 0) return 'Start today!'
+  if (streak >= 30) return streak + ' days 🏆'
+  if (streak >= 7) return streak + ' days 🔥'
+  if (streak === 1) return '1 day'
+  return streak + ' days'
+}
+
 export default function DailyScreen() {
   const question = getDailyQuestion()
   const [selected, setSelected] = useState(null)
   const [answered, setAnswered] = useState(false)
-  const { streak, incrementStreak } = useStreak()
+  const { streak, incrementStreak, loadStreak } = useStreak()
+
+  useFocusEffect(
+    useCallback(() => {
+      loadStreak()
+    }, [])
+  )
 
   const handleAnswer = (index) => {
-  if (answered) return
-  setSelected(index)
-  setAnswered(true)
-  incrementStreak()
-}
+    if (answered) return
+    setSelected(index)
+    setAnswered(true)
+    incrementStreak()
+
+    if (index === question.correct) {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)
+    } else {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error)
+    }
+  }
 
   const getFeedback = () => {
-    if (selected === question.correct) {
-      return 'Correct! Great job!'
-    }
+    if (selected === question.correct) return 'Correct! Great job!'
     return 'Not quite. The answer is ' + question.options[question.correct] + '.'
   }
 
@@ -75,9 +95,14 @@ export default function DailyScreen() {
 
       <View style={styles.streakCard}>
         <Text style={styles.streakLabel}>Current Streak</Text>
-        <Text style={styles.streakValue}>
-          {streak} {streak === 1 ? 'day' : 'days'}
-        </Text>
+        <Text style={styles.streakValue}>{getStreakLabel(streak)}</Text>
+        {streak >= 7 && (
+          <Text style={styles.streakNote}>
+            {streak >= 30
+              ? 'Incredible — a whole month!'
+              : 'One week strong — keep it going!'}
+          </Text>
+        )}
       </View>
 
     </ScrollView>
@@ -167,15 +192,20 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
     padding: 20,
     alignItems: 'center',
+    gap: 8,
   },
   streakLabel: {
     fontSize: typography.sizes.sm,
     color: colors.muted,
-    marginBottom: 8,
   },
   streakValue: {
     fontSize: typography.sizes.xl,
     fontWeight: typography.weights.bold,
     color: colors.white,
+  },
+  streakNote: {
+    fontSize: typography.sizes.sm,
+    color: colors.accent,
+    textAlign: 'center',
   },
 })

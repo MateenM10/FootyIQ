@@ -5,8 +5,8 @@ import { Ionicons } from '@expo/vector-icons'
 import HomeScreen from '../screens/HomeScreen'
 import LearnNavigator from './LearnNavigator'
 import DailyScreen from '../screens/DailyScreen'
-import PremiumScreen from '../screens/PremiumScreen'
 import WatchNavigator from './WatchNavigator'
+import SettingsScreen from '../screens/SettingsScreen'
 import colors from '../theme/colors'
 import typography from '../theme/typography'
 
@@ -34,7 +34,7 @@ export default function AppNavigator() {
           },
           tabBarHideOnKeyboard: true,
           lazy: true,
-          tabBarIcon: ({ focused, color, size }) => {
+          tabBarIcon: ({ focused, color }) => {
             let iconName
 
             if (route.name === 'Home') {
@@ -45,8 +45,8 @@ export default function AppNavigator() {
               iconName = focused ? 'flash' : 'flash-outline'
             } else if (route.name === 'Watch') {
               iconName = focused ? 'tv' : 'tv-outline'
-            } else if (route.name === 'Premium') {
-              iconName = focused ? 'star' : 'star-outline'
+            } else if (route.name === 'Settings') {
+              iconName = focused ? 'settings' : 'settings-outline'
             }
 
             return <Ionicons name={iconName} size={22} color={color} />
@@ -57,7 +57,7 @@ export default function AppNavigator() {
         <Tab.Screen name="Learn" component={LearnNavigator} />
         <Tab.Screen name="Daily" component={DailyScreen} />
         <Tab.Screen name="Watch" component={WatchNavigator} />
-        <Tab.Screen name="Premium" component={PremiumScreen} />
+        <Tab.Screen name="Settings" component={SettingsScreen} />
       </Tab.Navigator>
     </NavigationContainer>
   )

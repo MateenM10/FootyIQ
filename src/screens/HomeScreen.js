@@ -9,7 +9,7 @@ import lessons from '../data/lessons'
 
 export default function HomeScreen() {
   const navigation = useNavigation()
-  const { streak } = useStreak()
+  const { streak, loadStreak } = useStreak()
   const { completed, loadProgress } = useProgress()
   const [loading, setLoading] = useState(true)
 
@@ -17,6 +17,7 @@ export default function HomeScreen() {
     useCallback(() => {
       const load = async () => {
         await loadProgress()
+        await loadStreak()
         setLoading(false)
       }
       load()

@@ -35,7 +35,6 @@ export default function useStreak() {
     try {
       const today = new Date().toDateString()
       const lastPlayed = await AsyncStorage.getItem('lastPlayed')
-
       if (lastPlayed === today) return
 
       const saved = await AsyncStorage.getItem('streak')
@@ -45,11 +44,10 @@ export default function useStreak() {
       await AsyncStorage.setItem('streak', newStreak.toString())
       await AsyncStorage.setItem('lastPlayed', today)
       setStreak(newStreak)
-      console.log('Streak updated to', newStreak)
     } catch (e) {
       console.log(e)
     }
   }
 
-  return { streak, incrementStreak }
+  return { streak, incrementStreak, loadStreak }
 }

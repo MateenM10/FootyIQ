@@ -13,6 +13,8 @@ export default function useProgress() {
       const saved = await AsyncStorage.getItem('completedLessons')
       if (saved) {
         setCompleted(JSON.parse(saved))
+      } else {
+        setCompleted([])
       }
     } catch (e) {
       console.log(e)
