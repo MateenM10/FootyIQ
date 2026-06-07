@@ -1,6 +1,7 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import WatchScreen from '../screens/WatchScreen'
 import MatchGuideScreen from '../screens/MatchGuideScreen'
+import FixtureGuideScreen from '../screens/FixtureGuideScreen'
 import colors from '../theme/colors'
 
 const Stack = createNativeStackNavigator()
@@ -27,6 +28,13 @@ export default function WatchNavigator() {
         component={MatchGuideScreen}
         options={({ route }) => ({
           title: route.params.match.homeTeam + ' vs ' + route.params.match.awayTeam,
+        })}
+      />
+      <Stack.Screen
+        name="FixtureGuide"
+        component={FixtureGuideScreen}
+        options={({ route }) => ({
+          title: route.params.fixture.homeTeam + ' vs ' + route.params.fixture.awayTeam,
         })}
       />
     </Stack.Navigator>
