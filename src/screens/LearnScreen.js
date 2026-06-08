@@ -1,6 +1,8 @@
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native'
 import { useNavigation, useFocusEffect } from '@react-navigation/native'
 import { useCallback, useState } from 'react'
+import { SafeAreaView } from 'react-native-safe-area-context'
+import { Ionicons } from '@expo/vector-icons'
 import colors from '../theme/colors'
 import typography from '../theme/typography'
 import lessons from '../data/lessons'
@@ -26,111 +28,136 @@ export default function LearnScreen() {
 
   if (loading) {
     return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={colors.accent} />
-      </View>
+      <SafeAreaView style={styles.safe} edges={['top']}>
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={colors.accent} />
+        </View>
+      </SafeAreaView>
     )
   }
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+    <SafeAreaView style={styles.safe} edges={['top']}>
+      <ScrollView
+        style={styles.container}
+        contentContainerStyle={styles.content}
+        showsVerticalScrollIndicator={false}
+      >
 
-      <Text style={styles.heading}>Learn</Text>
-      <Text style={styles.subheading}>Work through the tracks at your own pace</Text>
+        <Text style={styles.heading}>Learn</Text>
+        <Text style={styles.subheading}>Work through the tracks at your own pace</Text>
 
-      <View style={styles.progressCard}>
-        <View style={styles.progressHeader}>
-          <Text style={styles.progressLabel}>Your progress</Text>
-          <Text style={styles.progressCount}>
-            {completed.length}/{lessons.length} lessons
-          </Text>
-        </View>
-        <View style={styles.progressBarBg}>
-          <View style={[styles.progressBarFill, { width: (progress * 100) + '%' }]} />
-        </View>
-      </View>
-
-      {tracks.map(track => {
-        const trackLessons = lessons.filter(lesson => lesson.track === track.id)
-        const doneInTrack = trackLessons.filter(lesson => isComplete(lesson.id)).length
-
-        return (
-          <View key={track.id} style={styles.trackSection}>
-            <View style={styles.trackHeader}>
-              <Text style={styles.trackIcon}>{track.icon}</Text>
-              <View style={styles.trackHeaderText}>
-                <Text style={styles.trackTitle}>{track.title}</Text>
-                <Text style={styles.trackDesc}>{track.description}</Text>
-              </View>
-            </View>
-
-            <Text style={styles.trackProgress}>
-              {doneInTrack}/{trackLessons.length} complete
+        <View style={styles.progressCard}>
+          <View style={styles.progressHeader}>
+            <Text style={styles.progressLabel}>Overall progress</Text>
+            <Text style={styles.progressCount}>
+              {completed.length}/{lessons.length} lessons
             </Text>
-
-            {trackLessons.map(lesson => (
-              <TouchableOpacity
-                key={lesson.id}
-                style={[styles.lessonCard, isComplete(lesson.id) && styles.lessonCardComplete]}
-                onPress={() => navigation.navigate('Lesson', { lesson })}
-              >
-                <Text style={styles.lessonIcon}>{lesson.icon}</Text>
-                <View style={styles.lessonInfo}>
-                  <Text style={styles.lessonTitle}>{lesson.title}</Text>
-                  <Text style={styles.lessonMeta}>{lesson.category} · {lesson.duration}</Text>
-                </View>
-                {isComplete(lesson.id)
-                  ? <Text style={styles.checkmark}>✓</Text>
-                  : <Text style={styles.arrow}>→</Text>
-                }
-              </TouchableOpacity>
-            ))}
           </View>
-        )
-      })}
+          <View style={styles.progressBarBg}>
+            <View style={[styles.progressBarFill, { width: (progress * 100) + '%' }]} />
+          </View>
+        </View>
 
-    </ScrollView>
+        {tracks.map(track => {
+          const trackLessons = lessons.filter(l => l.track === track.id)
+          const doneInTrack = trackLessons.filter(l => isComplete(l.id)).length
+
+          return (
+            <View key={track.id} style={styles.trackSection}>
+
+              <View style={styles.trackHeader}>
+                <View style={styles.trackIconContainer}>
+                  <Ionicons name={track.icon} size={20} color={colors.accent} />
+                </View>
+                <View style={styles.trackHeaderText}>
+                  <Text style={styles.trackTitle}>{track.title}</Text>
+                  <Text style={styles.trackDesc}>{track.description}</Text>
+                </View>
+              </View>
+
+              <Text style={styles.trackProgress}>
+                {doneInTrack} of {trackLessons.length} complete
+              </Text>
+
+              {trackLessons.map(lesson => (
+                <TouchableOpacity
+                  key={lesson.id}
+                  style={[
+                    styles.lessonCard,
+                    isComplete(lesson.id) && styles.lessonCardComplete,
+                  ]}
+                  onPress={() => navigation.navigate('Lesson', { lesson })}
+                  activeOpacity={0.7}
+                >
+                  <View style={[
+                    styles.lessonIconContainer,
+                    isComplete(lesson.id) && styles.lessonIconContainerComplete,
+                  ]}>
+                    <Ionicons
+                      name={isComplete(lesson.id) ? 'checkmark' : lesson.icon}
+                      size={18}
+                      color={colors.accent}
+                    />
+                  </View>
+                  <View style={styles.lessonInfo}>
+                    <Text style={styles.lessonTitle}>{lesson.title}</Text>
+                    <Text style={styles.lessonMeta}>{lesson.category} · {lesson.duration}</Text>
+                  </View>
+                  <Ionicons name="chevron-forward" size={16} color={colors.muted} />
+                </TouchableOpacity>
+              ))}
+
+            </View>
+          )
+        })}
+
+      </ScrollView>
+    </SafeAreaView>
   )
 }
 
 const styles = StyleSheet.create({
-  loadingContainer: {
+  safe: {
     flex: 1,
     backgroundColor: colors.black,
+  },
+  loadingContainer: {
+    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
   },
   container: {
     flex: 1,
-    backgroundColor: colors.black,
   },
   content: {
     padding: 24,
-    paddingTop: 60,
     paddingBottom: 40,
   },
   heading: {
     fontSize: typography.sizes.xxl,
     fontWeight: typography.weights.bold,
     color: colors.white,
-    marginBottom: 8,
+    marginBottom: 6,
   },
   subheading: {
     fontSize: typography.sizes.md,
     color: colors.muted,
-    marginBottom: 24,
+    marginBottom: 28,
+    lineHeight: 22,
   },
   progressCard: {
     backgroundColor: colors.surface,
-    borderRadius: 14,
+    borderRadius: 16,
     borderWidth: 1,
     borderColor: colors.border,
     padding: 16,
-    marginBottom: 32,
+    marginBottom: 36,
   },
   progressHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'center',
     marginBottom: 12,
   },
   progressLabel: {
@@ -144,26 +171,31 @@ const styles = StyleSheet.create({
     fontWeight: typography.weights.bold,
   },
   progressBarBg: {
-    height: 6,
+    height: 5,
     backgroundColor: colors.border,
     borderRadius: 4,
   },
   progressBarFill: {
-    height: 6,
+    height: 5,
     backgroundColor: colors.accent,
     borderRadius: 4,
   },
   trackSection: {
-    marginBottom: 32,
+    marginBottom: 36,
   },
   trackHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 14,
-    marginBottom: 8,
+    marginBottom: 6,
   },
-  trackIcon: {
-    fontSize: 30,
+  trackIconContainer: {
+    width: 40,
+    height: 40,
+    borderRadius: 12,
+    backgroundColor: colors.accent + '18',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   trackHeaderText: {
     flex: 1,
@@ -184,26 +216,35 @@ const styles = StyleSheet.create({
     color: colors.accent,
     fontWeight: typography.weights.bold,
     textTransform: 'uppercase',
-    letterSpacing: 1,
+    letterSpacing: 0.8,
     marginBottom: 14,
+    marginLeft: 54,
   },
   lessonCard: {
     backgroundColor: colors.surface,
     borderRadius: 14,
     borderWidth: 1,
     borderColor: colors.border,
-    padding: 16,
+    padding: 14,
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: 10,
     gap: 14,
   },
   lessonCardComplete: {
-    borderColor: '#00C87A44',
-    backgroundColor: '#00C87A0A',
+    borderColor: colors.accent + '33',
+    backgroundColor: colors.accent + '08',
   },
-  lessonIcon: {
-    fontSize: 28,
+  lessonIconContainer: {
+    width: 40,
+    height: 40,
+    borderRadius: 10,
+    backgroundColor: colors.surface2,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  lessonIconContainerComplete: {
+    backgroundColor: colors.accent + '18',
   },
   lessonInfo: {
     flex: 1,
@@ -212,19 +253,10 @@ const styles = StyleSheet.create({
     fontSize: typography.sizes.md,
     fontWeight: typography.weights.bold,
     color: colors.white,
-    marginBottom: 4,
+    marginBottom: 3,
   },
   lessonMeta: {
     fontSize: typography.sizes.sm,
     color: colors.muted,
-  },
-  arrow: {
-    fontSize: typography.sizes.lg,
-    color: colors.accent,
-  },
-  checkmark: {
-    fontSize: typography.sizes.lg,
-    color: colors.accent,
-    fontWeight: typography.weights.bold,
   },
 })

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import { SafeAreaProvider } from 'react-native-safe-area-context'
 import AppNavigator from './src/navigation/AppNavigator'
 import OnboardingScreen from './src/screens/OnboardingScreen'
 
@@ -26,9 +27,12 @@ export default function App() {
 
   if (showOnboarding === null) return null
 
-  if (showOnboarding) {
-    return <OnboardingScreen onDone={handleOnboardingDone} />
-  }
-
-  return <AppNavigator />
+  return (
+    <SafeAreaProvider>
+      {showOnboarding
+        ? <OnboardingScreen onDone={handleOnboardingDone} />
+        : <AppNavigator />
+      }
+    </SafeAreaProvider>
+  )
 }

@@ -1,6 +1,10 @@
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native'
+import {
+  View, Text, StyleSheet, ScrollView, TouchableOpacity
+} from 'react-native'
 import { useState, useCallback } from 'react'
 import { useFocusEffect } from '@react-navigation/native'
+import { SafeAreaView } from 'react-native-safe-area-context'
+import { Ionicons } from '@expo/vector-icons'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import * as Haptics from 'expo-haptics'
 import colors from '../theme/colors'
@@ -17,12 +21,12 @@ const getDailyQuestion = () => {
   return questions[dayOfYear % questions.length]
 }
 
-const getStreakLabel = (streak) => {
-  if (streak === 0) return 'Start today!'
-  if (streak >= 30) return streak + ' days 🏆'
-  if (streak >= 7) return streak + ' days 🔥'
-  if (streak === 1) return '1 day'
-  return streak + ' days'
+const getStreakMessage = (streak) => {
+  if (streak === 0) return 'Answer today to start your streak'
+  if (streak >= 30) return 'Incredible — a whole month!'
+  if (streak >= 7) return 'One week strong — keep it going'
+  if (streak === 1) return 'Great start — come back tomorrow'
+  return 'Keep the streak alive'
 }
 
 export default function DailyScreen() {
@@ -81,85 +85,127 @@ export default function DailyScreen() {
   }
 
   const getFeedback = () => {
-    if (selected === question.correct) return 'Correct! Great job!'
+    if (selected === question.correct) return 'Correct! Great job.'
     return 'Not quite. The answer is ' + question.options[question.correct] + '.'
   }
 
+  const isCorrect = answered && selected === question.correct
+
   const getOptionStyle = (index) => {
     if (!answered) return styles.option
-    if (index === question.correct) return [styles.option, styles.correct]
-    if (index === selected) return [styles.option, styles.wrong]
-    return styles.option
+    if (index === question.correct) return [styles.option, styles.optionCorrect]
+    if (index === selected) return [styles.option, styles.optionWrong]
+    return [styles.option, styles.optionDimmed]
   }
 
   const getOptionTextStyle = (index) => {
     if (!answered) return styles.optionText
-    if (index === question.correct) return [styles.optionText, styles.correctText]
-    if (index === selected) return [styles.optionText, styles.wrongText]
-    return styles.optionText
+    if (index === question.correct) return [styles.optionText, styles.optionTextCorrect]
+    if (index === selected) return [styles.optionText, styles.optionTextWrong]
+    return [styles.optionText, styles.optionTextDimmed]
   }
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+    <SafeAreaView style={styles.safe} edges={['top']}>
+      <ScrollView
+        style={styles.container}
+        contentContainerStyle={styles.content}
+        showsVerticalScrollIndicator={false}
+      >
 
-      <Text style={styles.heading}>Daily Challenge</Text>
-      <Text style={styles.subheading}>One question every day. Keep your streak alive.</Text>
+        <Text style={styles.heading}>Daily Challenge</Text>
+        <Text style={styles.subheading}>One question every day. Keep your streak alive.</Text>
 
-      <View style={styles.card}>
-        <Text style={styles.cardLabel}>Today's Question</Text>
-        <Text style={styles.question}>{question.question}</Text>
+        <View style={styles.card}>
+          <Text style={styles.cardLabel}>Today's Question</Text>
+          <Text style={styles.question}>{question.question}</Text>
 
-        {question.options.map((option, index) => (
-          <TouchableOpacity
-            key={index}
-            style={getOptionStyle(index)}
-            onPress={() => handleAnswer(index)}
-            disabled={answered}
-          >
-            <Text style={getOptionTextStyle(index)}>{option}</Text>
-          </TouchableOpacity>
-        ))}
+          <View style={styles.optionsContainer}>
+            {question.options.map((option, index) => (
+              <TouchableOpacity
+                key={index}
+                style={getOptionStyle(index)}
+                onPress={() => handleAnswer(index)}
+                disabled={answered}
+                activeOpacity={0.7}
+              >
+                <Text style={getOptionTextStyle(index)}>{option}</Text>
+                {answered && index === question.correct && (
+                  <Ionicons name="checkmark-circle" size={18} color={colors.accent} />
+                )}
+                {answered && index === selected && index !== question.correct && (
+                  <Ionicons name="close-circle" size={18} color="#FF4D4D" />
+                )}
+              </TouchableOpacity>
+            ))}
+          </View>
 
-        {answered && (
-          <Text style={styles.feedback}>{getFeedback()}</Text>
-        )}
-      </View>
+          {answered && (
+            <View style={[
+              styles.feedbackRow,
+              isCorrect ? styles.feedbackCorrect : styles.feedbackWrong,
+            ]}>
+              <Ionicons
+                name={isCorrect ? 'checkmark-circle-outline' : 'information-circle-outline'}
+                size={18}
+                color={isCorrect ? colors.accent : '#FF4D4D'}
+              />
+              <Text style={[
+                styles.feedbackText,
+                isCorrect ? styles.feedbackTextCorrect : styles.feedbackTextWrong,
+              ]}>
+                {getFeedback()}
+              </Text>
+            </View>
+          )}
+        </View>
 
-      <View style={styles.streakCard}>
-        <Text style={styles.streakLabel}>Current Streak</Text>
-        <Text style={styles.streakValue}>{getStreakLabel(streak)}</Text>
-        {streak >= 7 && (
-          <Text style={styles.streakNote}>
-            {streak >= 30
-              ? 'Incredible — a whole month!'
-              : 'One week strong — keep it going!'}
+        <View style={styles.streakCard}>
+          <View style={styles.streakIconRow}>
+            <Ionicons
+              name={streak > 0 ? 'flame' : 'flame-outline'}
+              size={32}
+              color={streak > 0 ? colors.accent : colors.muted}
+            />
+          </View>
+          <Text style={styles.streakValue}>
+            {streak === 0 ? '—' : streak}
           </Text>
-        )}
-      </View>
+          <Text style={styles.streakUnit}>
+            {streak === 1 ? 'day streak' : 'day streak'}
+          </Text>
+          <Text style={styles.streakMessage}>{getStreakMessage(streak)}</Text>
+        </View>
 
-    </ScrollView>
+      </ScrollView>
+    </SafeAreaView>
   )
 }
 
 const styles = StyleSheet.create({
-  container: {
+  safe: {
     flex: 1,
     backgroundColor: colors.black,
   },
+  container: {
+    flex: 1,
+  },
   content: {
     padding: 24,
-    paddingTop: 60,
+    paddingBottom: 40,
   },
   heading: {
     fontSize: typography.sizes.xxl,
     fontWeight: typography.weights.bold,
     color: colors.white,
-    marginBottom: 8,
+    marginBottom: 6,
+    letterSpacing: -0.5,
   },
   subheading: {
     fontSize: typography.sizes.md,
     color: colors.muted,
-    marginBottom: 32,
+    marginBottom: 28,
+    lineHeight: 22,
   },
   card: {
     backgroundColor: colors.surface,
@@ -174,7 +220,7 @@ const styles = StyleSheet.create({
     color: colors.accent,
     fontWeight: typography.weights.bold,
     textTransform: 'uppercase',
-    letterSpacing: 1,
+    letterSpacing: 0.8,
     marginBottom: 12,
   },
   question: {
@@ -184,60 +230,98 @@ const styles = StyleSheet.create({
     marginBottom: 24,
     lineHeight: 28,
   },
+  optionsContainer: {
+    gap: 8,
+  },
   option: {
     backgroundColor: colors.surface2,
     borderRadius: 10,
     borderWidth: 1,
     borderColor: colors.border,
     padding: 14,
-    marginBottom: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  optionCorrect: {
+    borderColor: colors.accent,
+    backgroundColor: colors.accent + '18',
+  },
+  optionWrong: {
+    borderColor: '#FF4D4D',
+    backgroundColor: '#FF4D4D18',
+  },
+  optionDimmed: {
+    opacity: 0.4,
   },
   optionText: {
     fontSize: typography.sizes.md,
     color: colors.white,
     fontWeight: typography.weights.medium,
+    flex: 1,
   },
-  correct: {
-    borderColor: '#00C87A',
-    backgroundColor: '#00C87A22',
-  },
-  wrong: {
-    borderColor: '#FF4D4D',
-    backgroundColor: '#FF4D4D22',
-  },
-  correctText: {
+  optionTextCorrect: {
     color: colors.accent,
+    fontWeight: typography.weights.bold,
   },
-  wrongText: {
+  optionTextWrong: {
     color: '#FF4D4D',
   },
-  feedback: {
-    fontSize: typography.sizes.md,
-    color: colors.white,
-    marginTop: 8,
-    lineHeight: 22,
+  optionTextDimmed: {
+    color: colors.muted,
+  },
+  feedbackRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginTop: 16,
+    padding: 12,
+    borderRadius: 10,
+  },
+  feedbackCorrect: {
+    backgroundColor: colors.accent + '14',
+  },
+  feedbackWrong: {
+    backgroundColor: '#FF4D4D14',
+  },
+  feedbackText: {
+    fontSize: typography.sizes.sm,
+    flex: 1,
+    lineHeight: 20,
+  },
+  feedbackTextCorrect: {
+    color: colors.accent,
+  },
+  feedbackTextWrong: {
+    color: '#FF4D4D',
   },
   streakCard: {
     backgroundColor: colors.surface,
     borderRadius: 16,
     borderWidth: 1,
     borderColor: colors.border,
-    padding: 20,
+    padding: 24,
     alignItems: 'center',
-    gap: 8,
+    gap: 4,
   },
-  streakLabel: {
-    fontSize: typography.sizes.sm,
-    color: colors.muted,
+  streakIconRow: {
+    marginBottom: 8,
   },
   streakValue: {
-    fontSize: typography.sizes.xl,
+    fontSize: 48,
     fontWeight: typography.weights.bold,
     color: colors.white,
+    lineHeight: 56,
   },
-  streakNote: {
+  streakUnit: {
     fontSize: typography.sizes.sm,
-    color: colors.accent,
+    color: colors.muted,
+    fontWeight: typography.weights.medium,
+  },
+  streakMessage: {
+    fontSize: typography.sizes.sm,
+    color: colors.muted,
     textAlign: 'center',
+    marginTop: 4,
   },
 })

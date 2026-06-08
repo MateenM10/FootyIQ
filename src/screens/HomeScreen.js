@@ -1,11 +1,23 @@
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native'
+import {
+  View, Text, StyleSheet, ScrollView,
+  TouchableOpacity, ActivityIndicator
+} from 'react-native'
 import { useNavigation, useFocusEffect } from '@react-navigation/native'
 import { useCallback, useState } from 'react'
+import { SafeAreaView } from 'react-native-safe-area-context'
+import { Ionicons } from '@expo/vector-icons'
 import colors from '../theme/colors'
 import typography from '../theme/typography'
 import useStreak from '../hooks/useStreak'
 import useProgress from '../hooks/useProgress'
 import lessons from '../data/lessons'
+
+const topics = [
+  { icon: 'document-text-outline', label: 'Rules' },
+  { icon: 'people-outline',        label: 'Positions' },
+  { icon: 'bulb-outline',          label: 'Tactics' },
+  { icon: 'trophy-outline',        label: 'History' },
+]
 
 export default function HomeScreen() {
   const navigation = useNavigation()
@@ -28,125 +40,130 @@ export default function HomeScreen() {
 
   if (loading) {
     return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={colors.accent} />
-      </View>
+      <SafeAreaView style={styles.safe} edges={['top']}>
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={colors.accent} />
+        </View>
+      </SafeAreaView>
     )
   }
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+    <SafeAreaView style={styles.safe} edges={['top']}>
+      <ScrollView
+        style={styles.container}
+        contentContainerStyle={styles.content}
+        showsVerticalScrollIndicator={false}
+      >
 
-      <View style={styles.header}>
-        <Text style={styles.logo}>Footy<Text style={styles.logoAccent}>IQ</Text></Text>
-        <Text style={styles.tagline}>Learn soccer like a pro</Text>
-      </View>
-
-      {completed.length === 0 && streak === 0 ? (
-        <View style={styles.emptyCard}>
-          <Text style={styles.emptyIcon}>⚽</Text>
-          <Text style={styles.emptyTitle}>Welcome to FootyIQ</Text>
-          <Text style={styles.emptyText}>
-            Complete your first lesson and daily challenge to start tracking your progress.
+        <View style={styles.header}>
+          <Text style={styles.logo}>
+            Footy<Text style={styles.logoAccent}>IQ</Text>
           </Text>
+          <Text style={styles.tagline}>Learn soccer like a pro</Text>
         </View>
-      ) : (
-        <View style={styles.statsRow}>
-          <View style={styles.statCard}>
-            <Text style={styles.statValue}>{streak}</Text>
-            <Text style={styles.statLabel}>🔥 Day streak</Text>
+
+        {completed.length === 0 && streak === 0 ? (
+          <View style={styles.welcomeCard}>
+            <View style={styles.welcomeIconContainer}>
+              <Ionicons name="football-outline" size={28} color={colors.accent} />
+            </View>
+            <Text style={styles.welcomeTitle}>Welcome to FootyIQ</Text>
+            <Text style={styles.welcomeText}>
+              Complete your first lesson and daily challenge to start tracking your progress.
+            </Text>
           </View>
-          <View style={styles.statCard}>
-            <Text style={styles.statValue}>{completed.length}/{lessons.length}</Text>
-            <Text style={styles.statLabel}>📖 Lessons done</Text>
+        ) : (
+          <View style={styles.statsRow}>
+            <View style={styles.statCard}>
+              <Ionicons name="flame" size={18} color={colors.accent} />
+              <Text style={styles.statValue}>{streak}</Text>
+              <Text style={styles.statLabel}>Day Streak</Text>
+            </View>
+            <View style={styles.statCard}>
+              <Ionicons name="book-outline" size={18} color={colors.accent} />
+              <Text style={styles.statValue}>{completed.length}/{lessons.length}</Text>
+              <Text style={styles.statLabel}>Lessons Done</Text>
+            </View>
+            <View style={styles.statCard}>
+              <Ionicons name="star-outline" size={18} color={colors.accent} />
+              <Text style={styles.statValue}>{Math.round(progress * 100)}%</Text>
+              <Text style={styles.statLabel}>Complete</Text>
+            </View>
           </View>
-          <View style={styles.statCard}>
-            <Text style={styles.statValue}>{Math.round(progress * 100)}%</Text>
-            <Text style={styles.statLabel}>⭐ Complete</Text>
+        )}
+
+        <View style={styles.progressCard}>
+          <View style={styles.progressHeader}>
+            <Text style={styles.progressLabel}>Overall progress</Text>
+            <Text style={styles.progressCount}>{Math.round(progress * 100)}%</Text>
+          </View>
+          <View style={styles.progressBarBg}>
+            <View style={[styles.progressBarFill, { width: (progress * 100) + '%' }]} />
           </View>
         </View>
-      )}
 
-      <View style={styles.progressCard}>
-        <View style={styles.progressHeader}>
-          <Text style={styles.progressLabel}>Overall progress</Text>
-          <Text style={styles.progressCount}>{Math.round(progress * 100)}%</Text>
+        <View style={styles.challengeCard}>
+          <Text style={styles.challengeLabel}>Daily Challenge</Text>
+          <Text style={styles.challengeTitle}>Ready for today's question?</Text>
+          <TouchableOpacity
+            style={styles.challengeButton}
+            onPress={() => navigation.navigate('Daily')}
+            activeOpacity={0.8}
+          >
+            <Text style={styles.challengeButtonText}>Play now</Text>
+            <Ionicons name="arrow-forward" size={16} color={colors.black} />
+          </TouchableOpacity>
         </View>
-        <View style={styles.progressBarBg}>
-          <View style={[styles.progressBarFill, { width: (progress * 100) + '%' }]} />
+
+        <Text style={styles.sectionTitle}>What do you want to learn?</Text>
+
+        <View style={styles.topicGrid}>
+          {topics.map(topic => (
+            <TouchableOpacity
+              key={topic.label}
+              style={styles.topicCard}
+              onPress={() => navigation.navigate('Learn')}
+              activeOpacity={0.7}
+            >
+              <View style={styles.topicIconContainer}>
+                <Ionicons name={topic.icon} size={22} color={colors.accent} />
+              </View>
+              <Text style={styles.topicName}>{topic.label}</Text>
+            </TouchableOpacity>
+          ))}
         </View>
-      </View>
 
-      <View style={styles.card}>
-        <Text style={styles.cardLabel}>Today's Challenge</Text>
-        <Text style={styles.cardTitle}>Ready for today's question?</Text>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => navigation.navigate('Daily')}
-        >
-          <Text style={styles.buttonText}>Play now →</Text>
-        </TouchableOpacity>
-      </View>
-
-      <Text style={styles.sectionTitle}>What do you want to learn?</Text>
-
-      <View style={styles.topicGrid}>
-        <TouchableOpacity
-          style={styles.topicCard}
-          onPress={() => navigation.navigate('Learn')}
-        >
-          <Text style={styles.topicIcon}>📖</Text>
-          <Text style={styles.topicName}>Rules</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.topicCard}
-          onPress={() => navigation.navigate('Learn')}
-        >
-          <Text style={styles.topicIcon}>🏃</Text>
-          <Text style={styles.topicName}>Positions</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.topicCard}
-          onPress={() => navigation.navigate('Learn')}
-        >
-          <Text style={styles.topicIcon}>🧠</Text>
-          <Text style={styles.topicName}>Tactics</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.topicCard}
-          onPress={() => navigation.navigate('Learn')}
-        >
-          <Text style={styles.topicIcon}>🏆</Text>
-          <Text style={styles.topicName}>History</Text>
-        </TouchableOpacity>
-      </View>
-
-    </ScrollView>
+      </ScrollView>
+    </SafeAreaView>
   )
 }
 
 const styles = StyleSheet.create({
-  loadingContainer: {
+  safe: {
     flex: 1,
     backgroundColor: colors.black,
+  },
+  loadingContainer: {
+    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
   },
   container: {
     flex: 1,
-    backgroundColor: colors.black,
   },
   content: {
     padding: 24,
-    paddingTop: 60,
+    paddingBottom: 40,
   },
   header: {
-    marginBottom: 24,
+    marginBottom: 28,
   },
   logo: {
     fontSize: typography.sizes.xxl,
     fontWeight: typography.weights.bold,
     color: colors.white,
+    letterSpacing: -0.5,
   },
   logoAccent: {
     color: colors.accent,
@@ -156,26 +173,31 @@ const styles = StyleSheet.create({
     color: colors.muted,
     marginTop: 4,
   },
-  emptyCard: {
+  welcomeCard: {
     backgroundColor: colors.surface,
     borderRadius: 16,
     borderWidth: 1,
     borderColor: colors.border,
     padding: 24,
     alignItems: 'center',
+    gap: 12,
     marginBottom: 16,
-    gap: 10,
   },
-  emptyIcon: {
-    fontSize: 40,
+  welcomeIconContainer: {
+    width: 56,
+    height: 56,
+    borderRadius: 16,
+    backgroundColor: colors.accent + '18',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  emptyTitle: {
+  welcomeTitle: {
     fontSize: typography.sizes.lg,
     fontWeight: typography.weights.bold,
     color: colors.white,
     textAlign: 'center',
   },
-  emptyText: {
+  welcomeText: {
     fontSize: typography.sizes.sm,
     color: colors.muted,
     textAlign: 'center',
@@ -189,7 +211,7 @@ const styles = StyleSheet.create({
   statCard: {
     flex: 1,
     backgroundColor: colors.surface,
-    borderRadius: 12,
+    borderRadius: 14,
     borderWidth: 1,
     borderColor: colors.border,
     padding: 14,
@@ -202,9 +224,10 @@ const styles = StyleSheet.create({
     color: colors.white,
   },
   statLabel: {
-    fontSize: typography.sizes.xs,
+    fontSize: 11,
     color: colors.muted,
     textAlign: 'center',
+    fontWeight: typography.weights.medium,
   },
   progressCard: {
     backgroundColor: colors.surface,
@@ -217,6 +240,7 @@ const styles = StyleSheet.create({
   progressHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'center',
     marginBottom: 12,
   },
   progressLabel: {
@@ -230,16 +254,16 @@ const styles = StyleSheet.create({
     fontWeight: typography.weights.bold,
   },
   progressBarBg: {
-    height: 6,
+    height: 5,
     backgroundColor: colors.border,
     borderRadius: 4,
   },
   progressBarFill: {
-    height: 6,
+    height: 5,
     backgroundColor: colors.accent,
     borderRadius: 4,
   },
-  card: {
+  challengeCard: {
     backgroundColor: colors.surface,
     borderRadius: 16,
     padding: 20,
@@ -247,37 +271,39 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.border,
   },
-  cardLabel: {
+  challengeLabel: {
     fontSize: typography.sizes.xs,
     color: colors.accent,
     fontWeight: typography.weights.bold,
     textTransform: 'uppercase',
-    letterSpacing: 1,
+    letterSpacing: 0.8,
     marginBottom: 8,
   },
-  cardTitle: {
+  challengeTitle: {
     fontSize: typography.sizes.lg,
     color: colors.white,
     fontWeight: typography.weights.bold,
     marginBottom: 16,
-    lineHeight: 28,
   },
-  button: {
+  challengeButton: {
     backgroundColor: colors.accent,
     borderRadius: 10,
     padding: 14,
+    flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
   },
-  buttonText: {
+  challengeButtonText: {
     color: colors.black,
     fontWeight: typography.weights.bold,
     fontSize: typography.sizes.md,
   },
   sectionTitle: {
-    fontSize: typography.sizes.lg,
+    fontSize: typography.sizes.md,
     fontWeight: typography.weights.bold,
     color: colors.white,
-    marginBottom: 16,
+    marginBottom: 14,
   },
   topicGrid: {
     flexDirection: 'row',
@@ -286,20 +312,25 @@ const styles = StyleSheet.create({
   },
   topicCard: {
     backgroundColor: colors.surface,
-    borderRadius: 12,
+    borderRadius: 14,
     borderWidth: 1,
     borderColor: colors.border,
-    padding: 20,
+    padding: 18,
     width: '47%',
     alignItems: 'center',
-    gap: 8,
+    gap: 10,
   },
-  topicIcon: {
-    fontSize: 28,
+  topicIconContainer: {
+    width: 44,
+    height: 44,
+    borderRadius: 12,
+    backgroundColor: colors.accent + '18',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   topicName: {
-    fontSize: typography.sizes.md,
+    fontSize: typography.sizes.sm,
     color: colors.white,
-    fontWeight: typography.weights.medium,
+    fontWeight: typography.weights.bold,
   },
 })

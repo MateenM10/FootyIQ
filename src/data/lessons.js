@@ -1,7 +1,7 @@
 const lessons = [
   {
     id: '1',
-    icon: '📖',
+    icon: 'document-text-outline',
     title: 'The Basic Rules',
     duration: '5 min',
     category: 'Beginner',
@@ -27,7 +27,7 @@ const lessons = [
   },
   {
     id: '3',
-    icon: '🟨',
+    icon: 'alert-circle-outline',
     title: 'Fouls & Cards',
     duration: '6 min',
     category: 'Beginner',
@@ -53,7 +53,7 @@ const lessons = [
   },
   {
     id: '7',
-    icon: '🚩',
+    icon: 'flag-outline',
     title: 'Offside Explained',
     duration: '6 min',
     category: 'Beginner',
@@ -79,7 +79,7 @@ const lessons = [
   },
   {
     id: '2',
-    icon: '🏃',
+    icon: 'people-outline',
     title: 'Player Positions',
     duration: '7 min',
     category: 'Beginner',
@@ -105,7 +105,7 @@ const lessons = [
   },
   {
     id: '8',
-    icon: '🧤',
+    icon: 'shield-checkmark-outline',
     title: 'The Goalkeeper',
     duration: '6 min',
     category: 'Beginner',
@@ -131,7 +131,7 @@ const lessons = [
   },
   {
     id: '9',
-    icon: '↔️',
+    icon: 'swap-horizontal-outline',
     title: 'Modern Fullbacks',
     duration: '7 min',
     category: 'Intermediate',
@@ -157,7 +157,7 @@ const lessons = [
   },
   {
     id: '4',
-    icon: '🧠',
+    icon: 'grid-outline',
     title: 'Formations Explained',
     duration: '10 min',
     category: 'Intermediate',
@@ -183,7 +183,7 @@ const lessons = [
   },
   {
     id: '5',
-    icon: '⚡',
+    icon: 'shield-outline',
     title: 'Pressing & Defending',
     duration: '8 min',
     category: 'Intermediate',
@@ -209,7 +209,7 @@ const lessons = [
   },
   {
     id: '10',
-    icon: '🎯',
+    icon: 'trending-up-outline',
     title: 'Attacking Patterns',
     duration: '8 min',
     category: 'Intermediate',
@@ -235,7 +235,7 @@ const lessons = [
   },
   {
     id: '6',
-    icon: '🏆',
+    icon: 'trophy-outline',
     title: 'Famous Tournaments',
     duration: '6 min',
     category: 'Beginner',
@@ -261,7 +261,7 @@ const lessons = [
   },
   {
     id: '11',
-    icon: '🌍',
+    icon: 'earth-outline',
     title: 'The World Cup Story',
     duration: '7 min',
     category: 'Beginner',
@@ -287,7 +287,7 @@ const lessons = [
   },
   {
     id: '12',
-    icon: '🏟️',
+    icon: 'business-outline',
     title: 'Club Football Explained',
     duration: '6 min',
     category: 'Beginner',
