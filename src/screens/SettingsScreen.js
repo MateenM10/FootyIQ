@@ -1,7 +1,33 @@
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native'
+import {
+  View, Text, StyleSheet, ScrollView,
+  TouchableOpacity, Alert
+} from 'react-native'
+import { SafeAreaView } from 'react-native-safe-area-context'
+import { Ionicons } from '@expo/vector-icons'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import colors from '../theme/colors'
 import typography from '../theme/typography'
+
+const SettingsRow = ({ icon, iconColor = colors.accent, label, sub, value, onPress, destructive }) => (
+  <TouchableOpacity
+    style={styles.row}
+    onPress={onPress}
+    disabled={!onPress}
+    activeOpacity={onPress ? 0.6 : 1}
+  >
+    <View style={[styles.rowIcon, { backgroundColor: (iconColor || colors.accent) + '18' }]}>
+      <Ionicons name={icon} size={17} color={iconColor || colors.accent} />
+    </View>
+    <View style={styles.rowContent}>
+      <Text style={[styles.rowLabel, destructive && styles.destructiveLabel]}>{label}</Text>
+      {sub && <Text style={styles.rowSub}>{sub}</Text>}
+    </View>
+    {value && <Text style={styles.rowValue}>{value}</Text>}
+    {onPress && !value && (
+      <Ionicons name="chevron-forward" size={16} color={colors.border} />
+    )}
+  </TouchableOpacity>
+)
 
 export default function SettingsScreen() {
 
@@ -35,6 +61,7 @@ export default function SettingsScreen() {
           onPress: async () => {
             await AsyncStorage.removeItem('streak')
             await AsyncStorage.removeItem('lastPlayed')
+            await AsyncStorage.removeItem('dailyAnswer')
             Alert.alert('Done', 'Your streak has been reset.')
           },
         },
@@ -61,133 +88,151 @@ export default function SettingsScreen() {
   }
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+    <SafeAreaView style={styles.safe} edges={['top']}>
+      <ScrollView
+        style={styles.container}
+        contentContainerStyle={styles.content}
+        showsVerticalScrollIndicator={false}
+      >
 
-      <Text style={styles.heading}>Settings</Text>
+        <Text style={styles.heading}>Settings</Text>
 
-      <Text style={styles.sectionLabel}>Progress</Text>
-      <View style={styles.card}>
-        <TouchableOpacity style={styles.row} onPress={resetProgress}>
-          <View style={styles.rowText}>
-            <Text style={styles.rowTitle}>Reset lesson progress</Text>
-            <Text style={styles.rowSub}>Clear all completed lessons</Text>
-          </View>
-          <Text style={styles.rowArrow}>→</Text>
-        </TouchableOpacity>
-        <View style={styles.divider} />
-        <TouchableOpacity style={styles.row} onPress={resetStreak}>
-          <View style={styles.rowText}>
-            <Text style={styles.rowTitle}>Reset streak</Text>
-            <Text style={styles.rowSub}>Reset your daily challenge streak to zero</Text>
-          </View>
-          <Text style={styles.rowArrow}>→</Text>
-        </TouchableOpacity>
-      </View>
-
-      <Text style={styles.sectionLabel}>Data</Text>
-      <View style={styles.card}>
-        <TouchableOpacity style={styles.row} onPress={clearAllData}>
-          <View style={styles.rowText}>
-            <Text style={[styles.rowTitle, styles.destructive]}>Clear all data</Text>
-            <Text style={styles.rowSub}>Reset everything including onboarding</Text>
-          </View>
-          <Text style={styles.rowArrow}>→</Text>
-        </TouchableOpacity>
-      </View>
-
-      <Text style={styles.sectionLabel}>About</Text>
-      <View style={styles.card}>
-        <View style={styles.row}>
-          <Text style={styles.rowTitle}>App</Text>
-          <Text style={styles.rowValue}>FootyIQ</Text>
+        <Text style={styles.sectionTitle}>Progress</Text>
+        <View style={styles.section}>
+          <SettingsRow
+            icon="library-outline"
+            label="Reset lesson progress"
+            sub="Clear all completed lessons"
+            onPress={resetProgress}
+          />
+          <View style={styles.separator} />
+          <SettingsRow
+            icon="flame-outline"
+            label="Reset streak"
+            sub="Reset your daily challenge streak to zero"
+            onPress={resetStreak}
+          />
         </View>
-        <View style={styles.divider} />
-        <View style={styles.row}>
-          <Text style={styles.rowTitle}>Version</Text>
-          <Text style={styles.rowValue}>1.0.0</Text>
-        </View>
-        <View style={styles.divider} />
-        <View style={styles.row}>
-          <Text style={styles.rowTitle}>Built with</Text>
-          <Text style={styles.rowValue}>React Native + Expo</Text>
-        </View>
-        <View style={styles.divider} />
-        <View style={styles.row}>
-          <Text style={styles.rowTitle}>Match data</Text>
-          <Text style={styles.rowValue}>API-Football</Text>
-        </View>
-      </View>
 
-    </ScrollView>
+        <Text style={styles.sectionTitle}>Data</Text>
+        <View style={styles.section}>
+          <SettingsRow
+            icon="trash-outline"
+            iconColor="#FF4D4D"
+            label="Clear all data"
+            sub="Reset everything, including onboarding"
+            onPress={clearAllData}
+            destructive
+          />
+        </View>
+
+        <Text style={styles.sectionTitle}>About</Text>
+        <View style={styles.section}>
+          <SettingsRow
+            icon="football-outline"
+            label="App"
+            value="FootyIQ"
+          />
+          <View style={styles.separator} />
+          <SettingsRow
+            icon="information-circle-outline"
+            label="Version"
+            value="1.0.0"
+          />
+          <View style={styles.separator} />
+          <SettingsRow
+            icon="code-outline"
+            label="Built with"
+            value="React Native + Expo"
+          />
+          <View style={styles.separator} />
+          <SettingsRow
+            icon="server-outline"
+            label="Match data"
+            value="API-Football"
+          />
+        </View>
+
+      </ScrollView>
+    </SafeAreaView>
   )
 }
 
 const styles = StyleSheet.create({
-  container: {
+  safe: {
     flex: 1,
     backgroundColor: colors.black,
   },
+  container: {
+    flex: 1,
+  },
   content: {
     padding: 24,
-    paddingTop: 60,
     paddingBottom: 40,
-    gap: 12,
+    gap: 10,
   },
   heading: {
     fontSize: typography.sizes.xxl,
     fontWeight: typography.weights.bold,
     color: colors.white,
     marginBottom: 8,
+    letterSpacing: -0.5,
   },
-  sectionLabel: {
+  sectionTitle: {
     fontSize: typography.sizes.xs,
-    color: colors.accent,
+    color: colors.muted,
     fontWeight: typography.weights.bold,
     textTransform: 'uppercase',
-    letterSpacing: 1,
-    marginTop: 8,
+    letterSpacing: 0.8,
+    marginTop: 12,
+    marginBottom: 2,
+    paddingHorizontal: 4,
   },
-  card: {
+  section: {
     backgroundColor: colors.surface,
-    borderRadius: 14,
+    borderRadius: 16,
     borderWidth: 1,
     borderColor: colors.border,
     overflow: 'hidden',
   },
+  separator: {
+    height: 1,
+    backgroundColor: colors.border,
+    marginLeft: 56,
+  },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: 16,
+    padding: 14,
+    gap: 12,
   },
-  rowText: {
+  rowIcon: {
+    width: 32,
+    height: 32,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexShrink: 0,
+  },
+  rowContent: {
     flex: 1,
-    gap: 3,
+    gap: 2,
   },
-  rowTitle: {
+  rowLabel: {
     fontSize: typography.sizes.md,
     fontWeight: typography.weights.medium,
     color: colors.white,
+  },
+  destructiveLabel: {
+    color: '#FF4D4D',
   },
   rowSub: {
     fontSize: typography.sizes.sm,
     color: colors.muted,
   },
-  rowArrow: {
-    fontSize: typography.sizes.md,
-    color: colors.muted,
-    marginLeft: 12,
-  },
   rowValue: {
     fontSize: typography.sizes.sm,
     color: colors.muted,
-  },
-  divider: {
-    height: 1,
-    backgroundColor: colors.border,
-    marginLeft: 16,
-  },
-  destructive: {
-    color: '#FF4D4D',
+    fontWeight: typography.weights.medium,
   },
 })
