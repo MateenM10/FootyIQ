@@ -1,9 +1,8 @@
 import {
-  View, Text, StyleSheet, ScrollView, TouchableOpacity
+  View, Text, StyleSheet, TouchableOpacity
 } from 'react-native'
 import { useState, useCallback } from 'react'
 import { useFocusEffect } from '@react-navigation/native'
-import { SafeAreaView } from 'react-native-safe-area-context'
 import { Ionicons } from '@expo/vector-icons'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import * as Haptics from 'expo-haptics'
@@ -11,6 +10,9 @@ import colors from '../theme/colors'
 import typography from '../theme/typography'
 import questions from '../data/questions'
 import useStreak from '../hooks/useStreak'
+import ScreenWrapper from '../components/ScreenWrapper'
+import Card from '../components/Card'
+import SectionLabel from '../components/SectionLabel'
 
 const getDailyQuestion = () => {
   const now = new Date()
@@ -106,90 +108,75 @@ export default function DailyScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.safe} edges={['top']}>
-      <ScrollView
-        style={styles.container}
-        contentContainerStyle={styles.content}
-        showsVerticalScrollIndicator={false}
-      >
+    <ScreenWrapper edges={['top']} contentStyle={styles.content}>
 
-        <Text style={styles.heading}>Daily Challenge</Text>
-        <Text style={styles.subheading}>One question every day. Keep your streak alive.</Text>
+      <Text style={styles.heading}>Daily Challenge</Text>
+      <Text style={styles.subheading}>One question every day. Keep your streak alive.</Text>
 
-        <View style={styles.card}>
-          <Text style={styles.cardLabel}>Today's Question</Text>
-          <Text style={styles.question}>{question.question}</Text>
+      <Card style={styles.questionCard}>
+        <SectionLabel style={{ marginBottom: 12 }}>Today's Question</SectionLabel>
+        <Text style={styles.question}>{question.question}</Text>
 
-          <View style={styles.optionsContainer}>
-            {question.options.map((option, index) => (
-              <TouchableOpacity
-                key={index}
-                style={getOptionStyle(index)}
-                onPress={() => handleAnswer(index)}
-                disabled={answered}
-                activeOpacity={0.7}
-              >
-                <Text style={getOptionTextStyle(index)}>{option}</Text>
-                {answered && index === question.correct && (
-                  <Ionicons name="checkmark-circle" size={18} color={colors.accent} />
-                )}
-                {answered && index === selected && index !== question.correct && (
-                  <Ionicons name="close-circle" size={18} color="#FF4D4D" />
-                )}
-              </TouchableOpacity>
-            ))}
-          </View>
-
-          {answered && (
-            <View style={[
-              styles.feedbackRow,
-              isCorrect ? styles.feedbackCorrect : styles.feedbackWrong,
-            ]}>
-              <Ionicons
-                name={isCorrect ? 'checkmark-circle-outline' : 'information-circle-outline'}
-                size={18}
-                color={isCorrect ? colors.accent : '#FF4D4D'}
-              />
-              <Text style={[
-                styles.feedbackText,
-                isCorrect ? styles.feedbackTextCorrect : styles.feedbackTextWrong,
-              ]}>
-                {getFeedback()}
-              </Text>
-            </View>
-          )}
+        <View style={styles.optionsContainer}>
+          {question.options.map((option, index) => (
+            <TouchableOpacity
+              key={index}
+              style={getOptionStyle(index)}
+              onPress={() => handleAnswer(index)}
+              disabled={answered}
+              activeOpacity={0.7}
+            >
+              <Text style={getOptionTextStyle(index)}>{option}</Text>
+              {answered && index === question.correct && (
+                <Ionicons name="checkmark-circle" size={18} color={colors.accent} />
+              )}
+              {answered && index === selected && index !== question.correct && (
+                <Ionicons name="close-circle" size={18} color="#FF4D4D" />
+              )}
+            </TouchableOpacity>
+          ))}
         </View>
 
-        <View style={styles.streakCard}>
-          <View style={styles.streakIconRow}>
+        {answered && (
+          <View style={[
+            styles.feedbackRow,
+            isCorrect ? styles.feedbackCorrect : styles.feedbackWrong,
+          ]}>
             <Ionicons
-              name={streak > 0 ? 'flame' : 'flame-outline'}
-              size={32}
-              color={streak > 0 ? colors.accent : colors.muted}
+              name={isCorrect ? 'checkmark-circle-outline' : 'information-circle-outline'}
+              size={18}
+              color={isCorrect ? colors.accent : '#FF4D4D'}
             />
+            <Text style={[
+              styles.feedbackText,
+              isCorrect ? styles.feedbackTextCorrect : styles.feedbackTextWrong,
+            ]}>
+              {getFeedback()}
+            </Text>
           </View>
-          <Text style={styles.streakValue}>
-            {streak === 0 ? '—' : streak}
-          </Text>
-          <Text style={styles.streakUnit}>
-            {streak === 1 ? 'day streak' : 'day streak'}
-          </Text>
-          <Text style={styles.streakMessage}>{getStreakMessage(streak)}</Text>
-        </View>
+        )}
+      </Card>
 
-      </ScrollView>
-    </SafeAreaView>
+      <Card style={styles.streakCard}>
+        <View style={styles.streakIconRow}>
+          <Ionicons
+            name={streak > 0 ? 'flame' : 'flame-outline'}
+            size={32}
+            color={streak > 0 ? colors.accent : colors.muted}
+          />
+        </View>
+        <Text style={styles.streakValue}>
+          {streak === 0 ? '—' : streak}
+        </Text>
+        <Text style={styles.streakUnit}>day streak</Text>
+        <Text style={styles.streakMessage}>{getStreakMessage(streak)}</Text>
+      </Card>
+
+    </ScreenWrapper>
   )
 }
 
 const styles = StyleSheet.create({
-  safe: {
-    flex: 1,
-    backgroundColor: colors.black,
-  },
-  container: {
-    flex: 1,
-  },
   content: {
     padding: 24,
     paddingBottom: 40,
@@ -207,21 +194,9 @@ const styles = StyleSheet.create({
     marginBottom: 28,
     lineHeight: 22,
   },
-  card: {
-    backgroundColor: colors.surface,
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: colors.border,
+  questionCard: {
     padding: 20,
     marginBottom: 16,
-  },
-  cardLabel: {
-    fontSize: typography.sizes.xs,
-    color: colors.accent,
-    fontWeight: typography.weights.bold,
-    textTransform: 'uppercase',
-    letterSpacing: 0.8,
-    marginBottom: 12,
   },
   question: {
     fontSize: typography.sizes.lg,
@@ -296,10 +271,6 @@ const styles = StyleSheet.create({
     color: '#FF4D4D',
   },
   streakCard: {
-    backgroundColor: colors.surface,
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: colors.border,
     padding: 24,
     alignItems: 'center',
     gap: 4,

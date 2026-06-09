@@ -1,9 +1,10 @@
 import { useState, useRef } from 'react'
 import { View, Text, StyleSheet, TouchableOpacity, Animated } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { Ionicons } from '@expo/vector-icons'
 import colors from '../theme/colors'
 import typography from '../theme/typography'
+import IconContainer from '../components/IconContainer'
+import PrimaryButton from '../components/PrimaryButton'
 
 const slides = [
   {
@@ -63,7 +64,7 @@ export default function OnboardingScreen({ onDone }) {
   const isLast = index === slides.length - 1
 
   return (
-    <SafeAreaView style={styles.safe}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.black }}>
       <View style={styles.container}>
 
         <View style={styles.dotsRow}>
@@ -80,29 +81,28 @@ export default function OnboardingScreen({ onDone }) {
         </View>
 
         <Animated.View style={[styles.content, { opacity: fadeAnim }]}>
-          <View style={styles.iconContainer}>
-            <Ionicons name={slide.icon} size={40} color={colors.accent} />
-          </View>
+          <IconContainer
+            icon={slide.icon}
+            size={96}
+            iconSize={40}
+            color={colors.accent}
+            style={{
+              borderWidth: 1,
+              borderColor: colors.accent + '33',
+              borderRadius: 28,
+              marginBottom: 8,
+            }}
+          />
           <Text style={styles.title}>{slide.title}</Text>
           <Text style={styles.desc}>{slide.desc}</Text>
         </Animated.View>
 
         <View style={styles.actions}>
-          <TouchableOpacity
-            style={styles.nextButton}
+          <PrimaryButton
+            label={isLast ? 'Get started' : 'Next'}
+            icon={isLast ? 'checkmark' : 'arrow-forward'}
             onPress={handleNext}
-            activeOpacity={0.8}
-          >
-            <Text style={styles.nextButtonText}>
-              {isLast ? 'Get started' : 'Next'}
-            </Text>
-            <Ionicons
-              name={isLast ? 'checkmark' : 'arrow-forward'}
-              size={16}
-              color={colors.black}
-            />
-          </TouchableOpacity>
-
+          />
           {!isLast && (
             <TouchableOpacity
               style={styles.skipButton}
@@ -120,10 +120,6 @@ export default function OnboardingScreen({ onDone }) {
 }
 
 const styles = StyleSheet.create({
-  safe: {
-    flex: 1,
-    backgroundColor: colors.black,
-  },
   container: {
     flex: 1,
     paddingHorizontal: 28,
@@ -157,17 +153,6 @@ const styles = StyleSheet.create({
     gap: 20,
     paddingHorizontal: 8,
   },
-  iconContainer: {
-    width: 96,
-    height: 96,
-    borderRadius: 28,
-    backgroundColor: colors.accent + '18',
-    borderWidth: 1,
-    borderColor: colors.accent + '33',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 8,
-  },
   title: {
     fontSize: typography.sizes.xl,
     fontWeight: typography.weights.bold,
@@ -184,20 +169,6 @@ const styles = StyleSheet.create({
   },
   actions: {
     gap: 12,
-  },
-  nextButton: {
-    backgroundColor: colors.accent,
-    borderRadius: 14,
-    padding: 16,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 8,
-  },
-  nextButtonText: {
-    color: colors.black,
-    fontWeight: typography.weights.bold,
-    fontSize: typography.sizes.md,
   },
   skipButton: {
     padding: 12,

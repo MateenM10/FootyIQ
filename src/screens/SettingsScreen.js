@@ -1,12 +1,14 @@
 import {
-  View, Text, StyleSheet, ScrollView,
+  View, Text, StyleSheet,
   TouchableOpacity, Alert
 } from 'react-native'
-import { SafeAreaView } from 'react-native-safe-area-context'
 import { Ionicons } from '@expo/vector-icons'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import colors from '../theme/colors'
 import typography from '../theme/typography'
+import ScreenWrapper from '../components/ScreenWrapper'
+import Card from '../components/Card'
+import IconContainer from '../components/IconContainer'
 
 const SettingsRow = ({ icon, iconColor = colors.accent, label, sub, value, onPress, destructive }) => (
   <TouchableOpacity
@@ -15,9 +17,13 @@ const SettingsRow = ({ icon, iconColor = colors.accent, label, sub, value, onPre
     disabled={!onPress}
     activeOpacity={onPress ? 0.6 : 1}
   >
-    <View style={[styles.rowIcon, { backgroundColor: (iconColor || colors.accent) + '18' }]}>
-      <Ionicons name={icon} size={17} color={iconColor || colors.accent} />
-    </View>
+    <IconContainer
+      icon={icon}
+      size={32}
+      iconSize={17}
+      color={iconColor || colors.accent}
+      style={{ borderRadius: 8, flexShrink: 0 }}
+    />
     <View style={styles.rowContent}>
       <Text style={[styles.rowLabel, destructive && styles.destructiveLabel]}>{label}</Text>
       {sub && <Text style={styles.rowSub}>{sub}</Text>}
@@ -88,84 +94,71 @@ export default function SettingsScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.safe} edges={['top']}>
-      <ScrollView
-        style={styles.container}
-        contentContainerStyle={styles.content}
-        showsVerticalScrollIndicator={false}
-      >
+    <ScreenWrapper edges={['top']} contentStyle={styles.content}>
 
-        <Text style={styles.heading}>Settings</Text>
+      <Text style={styles.heading}>Settings</Text>
 
-        <Text style={styles.sectionTitle}>Progress</Text>
-        <View style={styles.section}>
-          <SettingsRow
-            icon="library-outline"
-            label="Reset lesson progress"
-            sub="Clear all completed lessons"
-            onPress={resetProgress}
-          />
-          <View style={styles.separator} />
-          <SettingsRow
-            icon="flame-outline"
-            label="Reset streak"
-            sub="Reset your daily challenge streak to zero"
-            onPress={resetStreak}
-          />
-        </View>
+      <Text style={styles.sectionTitle}>Progress</Text>
+      <Card style={{ overflow: 'hidden' }}>
+        <SettingsRow
+          icon="library-outline"
+          label="Reset lesson progress"
+          sub="Clear all completed lessons"
+          onPress={resetProgress}
+        />
+        <View style={styles.separator} />
+        <SettingsRow
+          icon="flame-outline"
+          label="Reset streak"
+          sub="Reset your daily challenge streak to zero"
+          onPress={resetStreak}
+        />
+      </Card>
 
-        <Text style={styles.sectionTitle}>Data</Text>
-        <View style={styles.section}>
-          <SettingsRow
-            icon="trash-outline"
-            iconColor="#FF4D4D"
-            label="Clear all data"
-            sub="Reset everything, including onboarding"
-            onPress={clearAllData}
-            destructive
-          />
-        </View>
+      <Text style={styles.sectionTitle}>Data</Text>
+      <Card style={{ overflow: 'hidden' }}>
+        <SettingsRow
+          icon="trash-outline"
+          iconColor="#FF4D4D"
+          label="Clear all data"
+          sub="Reset everything, including onboarding"
+          onPress={clearAllData}
+          destructive
+        />
+      </Card>
 
-        <Text style={styles.sectionTitle}>About</Text>
-        <View style={styles.section}>
-          <SettingsRow
-            icon="football-outline"
-            label="App"
-            value="FootyIQ"
-          />
-          <View style={styles.separator} />
-          <SettingsRow
-            icon="information-circle-outline"
-            label="Version"
-            value="1.0.0"
-          />
-          <View style={styles.separator} />
-          <SettingsRow
-            icon="code-outline"
-            label="Built with"
-            value="React Native + Expo"
-          />
-          <View style={styles.separator} />
-          <SettingsRow
-            icon="server-outline"
-            label="Match data"
-            value="API-Football"
-          />
-        </View>
+      <Text style={styles.sectionTitle}>About</Text>
+      <Card style={{ overflow: 'hidden' }}>
+        <SettingsRow
+          icon="football-outline"
+          label="App"
+          value="FootyIQ"
+        />
+        <View style={styles.separator} />
+        <SettingsRow
+          icon="information-circle-outline"
+          label="Version"
+          value="1.0.0"
+        />
+        <View style={styles.separator} />
+        <SettingsRow
+          icon="code-outline"
+          label="Built with"
+          value="React Native + Expo"
+        />
+        <View style={styles.separator} />
+        <SettingsRow
+          icon="server-outline"
+          label="Match data"
+          value="API-Football"
+        />
+      </Card>
 
-      </ScrollView>
-    </SafeAreaView>
+    </ScreenWrapper>
   )
 }
 
 const styles = StyleSheet.create({
-  safe: {
-    flex: 1,
-    backgroundColor: colors.black,
-  },
-  container: {
-    flex: 1,
-  },
   content: {
     padding: 24,
     paddingBottom: 40,
@@ -188,13 +181,6 @@ const styles = StyleSheet.create({
     marginBottom: 2,
     paddingHorizontal: 4,
   },
-  section: {
-    backgroundColor: colors.surface,
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: colors.border,
-    overflow: 'hidden',
-  },
   separator: {
     height: 1,
     backgroundColor: colors.border,
@@ -205,14 +191,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 14,
     gap: 12,
-  },
-  rowIcon: {
-    width: 32,
-    height: 32,
-    borderRadius: 8,
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexShrink: 0,
   },
   rowContent: {
     flex: 1,

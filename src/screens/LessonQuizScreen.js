@@ -1,5 +1,5 @@
 import {
-  View, Text, StyleSheet, ScrollView, TouchableOpacity
+  View, Text, StyleSheet, TouchableOpacity
 } from 'react-native'
 import { useState } from 'react'
 import { useNavigation } from '@react-navigation/native'
@@ -9,6 +9,9 @@ import * as Haptics from 'expo-haptics'
 import colors from '../theme/colors'
 import typography from '../theme/typography'
 import useProgress from '../hooks/useProgress'
+import ScreenWrapper from '../components/ScreenWrapper'
+import SectionLabel from '../components/SectionLabel'
+import PrimaryButton from '../components/PrimaryButton'
 
 const getResult = (score, total) => {
   if (score === total) return {
@@ -86,7 +89,7 @@ export default function LessonQuizScreen({ route }) {
   if (finished) {
     const result = getResult(score, questions.length)
     return (
-      <SafeAreaView style={styles.safe}>
+      <SafeAreaView style={{ flex: 1, backgroundColor: colors.black }}>
         <View style={styles.resultContainer}>
           <View style={[styles.resultIconContainer, { borderColor: result.iconColor + '44' }]}>
             <Ionicons name={result.icon} size={40} color={result.iconColor} />
@@ -99,92 +102,71 @@ export default function LessonQuizScreen({ route }) {
           </View>
           <Text style={styles.scoreSub}>correct</Text>
           <Text style={styles.resultSub}>{result.sub}</Text>
-          <TouchableOpacity
-            style={styles.doneButton}
+          <PrimaryButton
+            label="Back to lessons"
             onPress={() => navigation.navigate('LearnList')}
-            activeOpacity={0.8}
-          >
-            <Text style={styles.doneButtonText}>Back to lessons</Text>
-            <Ionicons name="arrow-forward" size={16} color={colors.black} />
-          </TouchableOpacity>
+            style={{ width: '100%', marginTop: 12 }}
+          />
         </View>
       </SafeAreaView>
     )
   }
 
   return (
-    <SafeAreaView style={styles.safe} edges={['bottom']}>
-      <ScrollView
-        style={styles.container}
-        contentContainerStyle={styles.content}
-        showsVerticalScrollIndicator={false}
-      >
+    <ScreenWrapper edges={['bottom']} contentStyle={styles.content}>
 
-        <View style={styles.progressRow}>
-          {questions.map((_, i) => (
-            <View
-              key={i}
-              style={[
-                styles.progressSegment,
-                i < currentIndex && styles.progressSegmentDone,
-                i === currentIndex && styles.progressSegmentActive,
-              ]}
-            />
-          ))}
-        </View>
+      <View style={styles.progressRow}>
+        {questions.map((_, i) => (
+          <View
+            key={i}
+            style={[
+              styles.progressSegment,
+              i < currentIndex && styles.progressSegmentDone,
+              i === currentIndex && styles.progressSegmentActive,
+            ]}
+          />
+        ))}
+      </View>
 
-        <Text style={styles.questionCount}>
-          Question {currentIndex + 1} of {questions.length}
-        </Text>
+      <SectionLabel style={{ marginBottom: 14 }}>
+        Question {currentIndex + 1} of {questions.length}
+      </SectionLabel>
 
-        <Text style={styles.question}>{currentQuestion.question}</Text>
+      <Text style={styles.question}>{currentQuestion.question}</Text>
 
-        <View style={styles.optionsContainer}>
-          {currentQuestion.options.map((option, index) => (
-            <TouchableOpacity
-              key={index}
-              style={getOptionStyle(index)}
-              onPress={() => handleAnswer(index)}
-              disabled={answered}
-              activeOpacity={0.7}
-            >
-              <Text style={getOptionTextStyle(index)}>{option}</Text>
-              {answered && index === currentQuestion.correct && (
-                <Ionicons name="checkmark-circle" size={18} color={colors.accent} />
-              )}
-              {answered && index === selected && index !== currentQuestion.correct && (
-                <Ionicons name="close-circle" size={18} color="#FF4D4D" />
-              )}
-            </TouchableOpacity>
-          ))}
-        </View>
-
-        {answered && (
+      <View style={styles.optionsContainer}>
+        {currentQuestion.options.map((option, index) => (
           <TouchableOpacity
-            style={styles.nextButton}
-            onPress={handleNext}
-            activeOpacity={0.8}
+            key={index}
+            style={getOptionStyle(index)}
+            onPress={() => handleAnswer(index)}
+            disabled={answered}
+            activeOpacity={0.7}
           >
-            <Text style={styles.nextButtonText}>
-              {isLast ? 'Finish lesson' : 'Next question'}
-            </Text>
-            <Ionicons name="arrow-forward" size={16} color={colors.black} />
+            <Text style={getOptionTextStyle(index)}>{option}</Text>
+            {answered && index === currentQuestion.correct && (
+              <Ionicons name="checkmark-circle" size={18} color={colors.accent} />
+            )}
+            {answered && index === selected && index !== currentQuestion.correct && (
+              <Ionicons name="close-circle" size={18} color="#FF4D4D" />
+            )}
           </TouchableOpacity>
-        )}
+        ))}
+      </View>
 
-      </ScrollView>
-    </SafeAreaView>
+      {answered && (
+        <PrimaryButton
+          label={isLast ? 'Finish lesson' : 'Next question'}
+          onPress={handleNext}
+          style={{ marginTop: 8 }}
+        />
+      )}
+
+    </ScreenWrapper>
   )
 }
 
 const styles = StyleSheet.create({
-  safe: {
-    flex: 1,
-    backgroundColor: colors.black,
-  },
-  container: {
-    flex: 1,
-  },
   content: {
     padding: 24,
     paddingBottom: 40,
@@ -205,14 +187,6 @@ const styles = StyleSheet.create({
   },
   progressSegmentDone: {
     backgroundColor: colors.accent + '55',
-  },
-  questionCount: {
-    fontSize: typography.sizes.xs,
-    color: colors.accent,
-    fontWeight: typography.weights.bold,
-    textTransform: 'uppercase',
-    letterSpacing: 0.8,
-    marginBottom: 14,
   },
   question: {
     fontSize: typography.sizes.lg,
@@ -261,21 +235,6 @@ const styles = StyleSheet.create({
   },
   optionTextDimmed: {
     color: colors.muted,
-  },
-  nextButton: {
-    backgroundColor: colors.accent,
-    borderRadius: 12,
-    padding: 16,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 8,
-    marginTop: 8,
-  },
-  nextButtonText: {
-    color: colors.black,
-    fontWeight: typography.weights.bold,
-    fontSize: typography.sizes.md,
   },
   resultContainer: {
     flex: 1,
@@ -333,21 +292,5 @@ const styles = StyleSheet.create({
     lineHeight: 24,
     paddingHorizontal: 16,
     marginTop: 4,
-  },
-  doneButton: {
-    backgroundColor: colors.accent,
-    borderRadius: 12,
-    padding: 16,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 8,
-    width: '100%',
-    marginTop: 12,
-  },
-  doneButtonText: {
-    color: colors.black,
-    fontWeight: typography.weights.bold,
-    fontSize: typography.sizes.md,
   },
 })

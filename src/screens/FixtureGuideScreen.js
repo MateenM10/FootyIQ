@@ -1,13 +1,16 @@
 import {
-  View, Text, StyleSheet, ScrollView, Image
+  View, Text, StyleSheet, Image
 } from 'react-native'
-import { SafeAreaView } from 'react-native-safe-area-context'
 import { Ionicons } from '@expo/vector-icons'
 import colors from '../theme/colors'
 import typography from '../theme/typography'
 import glossary from '../data/glossary'
 import GlossaryTerm from '../components/GlossaryTerm'
 import { generateMatchAnalysis } from '../services/matchAnalysis'
+import ScreenWrapper from '../components/ScreenWrapper'
+import Card from '../components/Card'
+import SectionLabel from '../components/SectionLabel'
+import IconContainer from '../components/IconContainer'
 
 const PREMIER_LEAGUE_INFO = 'The Premier League is the top division of English football, featuring 20 clubs competing from August to May. Each team plays 38 matches — home and away against every other side. The team with the most points at the end of the season wins the title. The bottom three clubs are relegated to the Championship.'
 
@@ -18,147 +21,142 @@ export default function FixtureGuideScreen({ route }) {
   const analysis = generateMatchAnalysis(fixture)
 
   return (
-    <SafeAreaView style={styles.safe} edges={['bottom']}>
-      <ScrollView
-        style={styles.container}
-        contentContainerStyle={styles.content}
-        showsVerticalScrollIndicator={false}
-      >
+    <ScreenWrapper edges={['bottom']} contentStyle={styles.content}>
 
-        <View style={styles.matchHeader}>
-          <Text style={styles.competition}>{fixture.competition}</Text>
+      <View style={styles.matchHeader}>
+        <SectionLabel>{fixture.competition}</SectionLabel>
 
-          <View style={styles.teamsRow}>
-            <View style={styles.team}>
-              <Image
-                source={{ uri: fixture.homeLogo }}
-                style={styles.logo}
-                resizeMode="contain"
-              />
-              <Text
-                style={[styles.teamName, fixture.homeWin && styles.winnerText]}
-                numberOfLines={2}
-              >
-                {fixture.homeTeam}
-              </Text>
+        <View style={styles.teamsRow}>
+          <View style={styles.team}>
+            <Image
+              source={{ uri: fixture.homeLogo }}
+              style={styles.logo}
+              resizeMode="contain"
+            />
+            <Text
+              style={[styles.teamName, fixture.homeWin && styles.winnerText]}
+              numberOfLines={2}
+            >
+              {fixture.homeTeam}
+            </Text>
+          </View>
+
+          <View style={styles.scoreBox}>
+            {fixture.score
+              ? <Text style={styles.score}>{fixture.score}</Text>
+              : <Text style={styles.vs}>vs</Text>
+            }
+            <View style={styles.statusBadge}>
+              <Text style={styles.statusText}>{fixture.status}</Text>
             </View>
+            <Text style={styles.kickoff}>{fixture.kickoff}</Text>
+          </View>
 
-            <View style={styles.scoreBox}>
-              {fixture.score
-                ? <Text style={styles.score}>{fixture.score}</Text>
-                : <Text style={styles.vs}>vs</Text>
-              }
-              <View style={styles.statusBadge}>
-                <Text style={styles.statusText}>{fixture.status}</Text>
-              </View>
-              <Text style={styles.kickoff}>{fixture.kickoff}</Text>
-            </View>
-
-            <View style={styles.team}>
-              <Image
-                source={{ uri: fixture.awayLogo }}
-                style={styles.logo}
-                resizeMode="contain"
-              />
-              <Text
-                style={[styles.teamName, fixture.awayWin && styles.winnerText]}
-                numberOfLines={2}
-              >
-                {fixture.awayTeam}
-              </Text>
-            </View>
+          <View style={styles.team}>
+            <Image
+              source={{ uri: fixture.awayLogo }}
+              style={styles.logo}
+              resizeMode="contain"
+            />
+            <Text
+              style={[styles.teamName, fixture.awayWin && styles.winnerText]}
+              numberOfLines={2}
+            >
+              {fixture.awayTeam}
+            </Text>
           </View>
         </View>
+      </View>
 
-        {analysis && (
-          <>
-            <View style={styles.divider} />
-            <View style={styles.section}>
-              <Text style={styles.sectionLabel}>Match Analysis</Text>
-              {analysis.map((insight, index) => (
-                <View key={index} style={styles.insightCard}>
-                  <View style={styles.insightIconContainer}>
-                    <Ionicons name={insight.icon} size={18} color={colors.accent} />
-                  </View>
-                  <View style={styles.insightText}>
-                    <Text style={styles.insightHeading}>{insight.heading}</Text>
-                    <Text style={styles.insightBody}>{insight.body}</Text>
-                  </View>
+      {analysis && (
+        <>
+          <View style={styles.divider} />
+          <View style={styles.section}>
+            <SectionLabel>Match Analysis</SectionLabel>
+            {analysis.map((insight, index) => (
+              <Card key={index} style={styles.insightCard}>
+                <IconContainer
+                  icon={insight.icon}
+                  size={36}
+                  iconSize={18}
+                  color={colors.accent}
+                  style={{ flexShrink: 0 }}
+                />
+                <View style={styles.insightText}>
+                  <Text style={styles.insightHeading}>{insight.heading}</Text>
+                  <Text style={styles.insightBody}>{insight.body}</Text>
                 </View>
-              ))}
-            </View>
-          </>
-        )}
-
-        <View style={styles.divider} />
-
-        <View style={styles.section}>
-          <Text style={styles.sectionLabel}>About this Competition</Text>
-          <Text style={styles.body}>{PREMIER_LEAGUE_INFO}</Text>
-        </View>
-
-        <View style={styles.divider} />
-
-        <View style={styles.section}>
-          <Text style={styles.sectionLabel}>Key Terms to Know</Text>
-          <Text style={styles.sectionHint}>Tap any term to learn what it means</Text>
-          <View style={styles.termsRow}>
-            {FIXTURE_KEY_TERMS.map(key => (
-              glossary[key] ? (
-                <View key={key} style={styles.termChip}>
-                  <GlossaryTerm termKey={key}>{glossary[key].term}</GlossaryTerm>
-                </View>
-              ) : null
+              </Card>
             ))}
           </View>
-        </View>
+        </>
+      )}
 
-        <View style={styles.divider} />
+      <View style={styles.divider} />
 
-        <View style={styles.section}>
-          <Text style={styles.sectionLabel}>How to Read a Result</Text>
-          {[
-            {
-              icon: 'stats-chart-outline',
-              title: 'The Score',
-              body: 'The first number is the home team\'s goals, the second is the away team\'s. A win earns 3 points in the league, a draw earns 1, and a loss earns 0.',
-            },
-            {
-              icon: 'home-outline',
-              title: 'Home Advantage',
-              body: 'The home team plays in their own stadium with their own fans. Home teams win more often — the crowd creates pressure, and the away team has had to travel.',
-            },
-            {
-              icon: 'arrow-forward-circle-outline',
-              title: 'What Happens Next',
-              body: 'Points accumulate across the whole season. After 38 games, the team with the most points wins the Premier League title. The bottom three teams get relegated to the Championship.',
-            },
-          ].map((item, index) => (
-            <View key={index} style={styles.explainerCard}>
-              <View style={styles.explainerIconContainer}>
-                <Ionicons name={item.icon} size={18} color={colors.accent} />
+      <View style={styles.section}>
+        <SectionLabel>About this Competition</SectionLabel>
+        <Text style={styles.body}>{PREMIER_LEAGUE_INFO}</Text>
+      </View>
+
+      <View style={styles.divider} />
+
+      <View style={styles.section}>
+        <SectionLabel>Key Terms to Know</SectionLabel>
+        <Text style={styles.sectionHint}>Tap any term to learn what it means</Text>
+        <View style={styles.termsRow}>
+          {FIXTURE_KEY_TERMS.map(key => (
+            glossary[key] ? (
+              <View key={key} style={styles.termChip}>
+                <GlossaryTerm termKey={key}>{glossary[key].term}</GlossaryTerm>
               </View>
-              <View style={styles.explainerText}>
-                <Text style={styles.explainerTitle}>{item.title}</Text>
-                <Text style={styles.explainerBody}>{item.body}</Text>
-              </View>
-            </View>
+            ) : null
           ))}
         </View>
+      </View>
 
-      </ScrollView>
-    </SafeAreaView>
+      <View style={styles.divider} />
+
+      <View style={styles.section}>
+        <SectionLabel>How to Read a Result</SectionLabel>
+        {[
+          {
+            icon: 'stats-chart-outline',
+            title: 'The Score',
+            body: 'The first number is the home team\'s goals, the second is the away team\'s. A win earns 3 points in the league, a draw earns 1, and a loss earns 0.',
+          },
+          {
+            icon: 'home-outline',
+            title: 'Home Advantage',
+            body: 'The home team plays in their own stadium with their own fans. Home teams win more often — the crowd creates pressure, and the away team has had to travel.',
+          },
+          {
+            icon: 'arrow-forward-circle-outline',
+            title: 'What Happens Next',
+            body: 'Points accumulate across the whole season. After 38 games, the team with the most points wins the Premier League title. The bottom three teams get relegated to the Championship.',
+          },
+        ].map((item, index) => (
+          <Card key={index} style={styles.insightCard}>
+            <IconContainer
+              icon={item.icon}
+              size={36}
+              iconSize={18}
+              color={colors.accent}
+              style={{ flexShrink: 0 }}
+            />
+            <View style={styles.insightText}>
+              <Text style={styles.insightHeading}>{item.title}</Text>
+              <Text style={styles.insightBody}>{item.body}</Text>
+            </View>
+          </Card>
+        ))}
+      </View>
+
+    </ScreenWrapper>
   )
 }
 
 const styles = StyleSheet.create({
-  safe: {
-    flex: 1,
-    backgroundColor: colors.black,
-  },
-  container: {
-    flex: 1,
-  },
   content: {
     padding: 24,
     paddingBottom: 40,
@@ -166,13 +164,6 @@ const styles = StyleSheet.create({
   matchHeader: {
     alignItems: 'center',
     gap: 20,
-  },
-  competition: {
-    fontSize: typography.sizes.xs,
-    color: colors.accent,
-    fontWeight: typography.weights.bold,
-    textTransform: 'uppercase',
-    letterSpacing: 0.8,
   },
   teamsRow: {
     flexDirection: 'row',
@@ -241,13 +232,6 @@ const styles = StyleSheet.create({
   section: {
     gap: 14,
   },
-  sectionLabel: {
-    fontSize: typography.sizes.xs,
-    color: colors.accent,
-    fontWeight: typography.weights.bold,
-    textTransform: 'uppercase',
-    letterSpacing: 0.8,
-  },
   sectionHint: {
     fontSize: typography.sizes.sm,
     color: colors.muted,
@@ -262,20 +246,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 14,
     alignItems: 'flex-start',
-    backgroundColor: colors.surface,
-    borderRadius: 14,
-    borderWidth: 1,
-    borderColor: colors.border,
     padding: 16,
-  },
-  insightIconContainer: {
-    width: 36,
-    height: 36,
-    borderRadius: 10,
-    backgroundColor: colors.accent + '18',
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexShrink: 0,
   },
   insightText: {
     flex: 1,
@@ -303,38 +274,5 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
     paddingVertical: 8,
     paddingHorizontal: 14,
-  },
-  explainerCard: {
-    flexDirection: 'row',
-    gap: 14,
-    alignItems: 'flex-start',
-    backgroundColor: colors.surface,
-    borderRadius: 14,
-    borderWidth: 1,
-    borderColor: colors.border,
-    padding: 16,
-  },
-  explainerIconContainer: {
-    width: 36,
-    height: 36,
-    borderRadius: 10,
-    backgroundColor: colors.accent + '18',
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexShrink: 0,
-  },
-  explainerText: {
-    flex: 1,
-    gap: 6,
-  },
-  explainerTitle: {
-    fontSize: typography.sizes.md,
-    fontWeight: typography.weights.bold,
-    color: colors.white,
-  },
-  explainerBody: {
-    fontSize: typography.sizes.sm,
-    color: colors.muted,
-    lineHeight: 22,
   },
 })
