@@ -2,6 +2,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import WatchScreen from '../screens/WatchScreen'
 import FixtureGuideScreen from '../screens/FixtureGuideScreen'
 import colors from '../theme/colors'
+import typography from '../theme/typography'
 
 const Stack = createNativeStackNavigator()
 
@@ -10,10 +11,16 @@ export default function WatchNavigator() {
     <Stack.Navigator
       screenOptions={{
         headerStyle: {
-          backgroundColor: colors.surface,
+          backgroundColor: colors.black,
         },
         headerTintColor: colors.white,
         headerShadowVisible: false,
+        headerBackTitleVisible: false,
+        headerTitleStyle: {
+          fontWeight: typography.weights.bold,
+          fontSize: typography.sizes.md,
+          color: colors.white,
+        },
         animation: 'slide_from_right',
       }}
     >

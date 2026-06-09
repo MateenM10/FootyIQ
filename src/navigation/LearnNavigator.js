@@ -3,6 +3,7 @@ import LearnScreen from '../screens/LearnScreen'
 import LessonScreen from '../screens/LessonScreen'
 import LessonQuizScreen from '../screens/LessonQuizScreen'
 import colors from '../theme/colors'
+import typography from '../theme/typography'
 
 const Stack = createNativeStackNavigator()
 
@@ -11,11 +12,16 @@ export default function LearnNavigator() {
     <Stack.Navigator
       screenOptions={{
         headerStyle: {
-          backgroundColor: colors.surface,
+          backgroundColor: colors.black,
         },
         headerTintColor: colors.white,
-        headerBackTitle: 'Back',
         headerShadowVisible: false,
+        headerBackTitleVisible: false,
+        headerTitleStyle: {
+          fontWeight: typography.weights.bold,
+          fontSize: typography.sizes.md,
+          color: colors.white,
+        },
         animation: 'slide_from_right',
       }}
     >
