@@ -1,6 +1,9 @@
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native'
+import {
+  View, Text, StyleSheet, ScrollView,
+  TouchableOpacity, ActivityIndicator
+} from 'react-native'
 import { useNavigation, useFocusEffect } from '@react-navigation/native'
-import { useCallback, useState } from 'react'
+import { useCallback, useState, useRef, useEffect } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Ionicons } from '@expo/vector-icons'
 import colors from '../theme/colors'
@@ -9,10 +12,13 @@ import lessons from '../data/lessons'
 import tracks from '../data/tracks'
 import useProgress from '../hooks/useProgress'
 
-export default function LearnScreen() {
+export default function LearnScreen({ route }) {
   const navigation = useNavigation()
   const { isComplete, completed, loadProgress } = useProgress()
   const [loading, setLoading] = useState(true)
+  const scrollViewRef = useRef(null)
+  const sectionOffsets = useRef({})
+  const initialTrack = route?.params?.initialTrack
 
   useFocusEffect(
     useCallback(() => {
@@ -23,6 +29,21 @@ export default function LearnScreen() {
       load()
     }, [])
   )
+
+  useEffect(() => {
+    if (!loading && initialTrack) {
+      const timer = setTimeout(() => {
+        const offset = sectionOffsets.current[initialTrack]
+        if (offset !== undefined && scrollViewRef.current) {
+          scrollViewRef.current.scrollTo({
+            y: Math.max(0, offset - 16),
+            animated: true,
+          })
+        }
+      }, 150)
+      return () => clearTimeout(timer)
+    }
+  }, [loading, initialTrack])
 
   const progress = completed.length / lessons.length
 
@@ -39,6 +60,7 @@ export default function LearnScreen() {
   return (
     <SafeAreaView style={styles.safe} edges={['top']}>
       <ScrollView
+        ref={scrollViewRef}
         style={styles.container}
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
@@ -64,7 +86,13 @@ export default function LearnScreen() {
           const doneInTrack = trackLessons.filter(l => isComplete(l.id)).length
 
           return (
-            <View key={track.id} style={styles.trackSection}>
+            <View
+              key={track.id}
+              style={styles.trackSection}
+              onLayout={e => {
+                sectionOffsets.current[track.id] = e.nativeEvent.layout.y
+              }}
+            >
 
               <View style={styles.trackHeader}>
                 <View style={styles.trackIconContainer}>

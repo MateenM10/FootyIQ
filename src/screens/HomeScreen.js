@@ -13,10 +13,10 @@ import useProgress from '../hooks/useProgress'
 import lessons from '../data/lessons'
 
 const topics = [
-  { icon: 'document-text-outline', label: 'Rules' },
-  { icon: 'people-outline',        label: 'Positions' },
-  { icon: 'bulb-outline',          label: 'Tactics' },
-  { icon: 'trophy-outline',        label: 'History' },
+  { icon: 'document-text-outline', label: 'Rules',     trackId: 'beginner'   },
+  { icon: 'people-outline',        label: 'Positions', trackId: 'positions'  },
+  { icon: 'bulb-outline',          label: 'Tactics',   trackId: 'tactics'    },
+  { icon: 'trophy-outline',        label: 'History',   trackId: 'history'    },
 ]
 
 export default function HomeScreen() {
@@ -123,7 +123,10 @@ export default function HomeScreen() {
             <TouchableOpacity
               key={topic.label}
               style={styles.topicCard}
-              onPress={() => navigation.navigate('Learn')}
+              onPress={() => navigation.navigate('Learn', {
+                screen: 'LearnList',
+                params: { initialTrack: topic.trackId },
+              })}
               activeOpacity={0.7}
             >
               <View style={styles.topicIconContainer}>

@@ -7,31 +7,15 @@ import colors from '../theme/colors'
 import typography from '../theme/typography'
 import glossary from '../data/glossary'
 import GlossaryTerm from '../components/GlossaryTerm'
+import { generateMatchAnalysis } from '../services/matchAnalysis'
 
 const PREMIER_LEAGUE_INFO = 'The Premier League is the top division of English football, featuring 20 clubs competing from August to May. Each team plays 38 matches — home and away against every other side. The team with the most points at the end of the season wins the title. The bottom three clubs are relegated to the Championship.'
 
 const FIXTURE_KEY_TERMS = ['press', 'lowBlock', 'counter', 'setPiece', 'transition', 'buildUp']
 
-const explainers = [
-  {
-    title: 'The Score',
-    icon: 'stats-chart-outline',
-    body: 'The first number is the home team\'s goals, the second is the away team\'s. A win earns 3 points in the league, a draw earns 1, and a loss earns 0.',
-  },
-  {
-    title: 'Home Advantage',
-    icon: 'home-outline',
-    body: 'The home team plays in their own stadium with their own fans. Home teams win more often — the crowd creates pressure, and the away team has had to travel.',
-  },
-  {
-    title: 'What Happens Next',
-    icon: 'arrow-forward-circle-outline',
-    body: 'Points accumulate across the whole season. After 38 games, the team with the most points wins the Premier League title. The bottom three teams get relegated to the Championship.',
-  },
-]
-
 export default function FixtureGuideScreen({ route }) {
   const { fixture } = route.params
+  const analysis = generateMatchAnalysis(fixture)
 
   return (
     <SafeAreaView style={styles.safe} edges={['bottom']}>
@@ -86,6 +70,26 @@ export default function FixtureGuideScreen({ route }) {
           </View>
         </View>
 
+        {analysis && (
+          <>
+            <View style={styles.divider} />
+            <View style={styles.section}>
+              <Text style={styles.sectionLabel}>Match Analysis</Text>
+              {analysis.map((insight, index) => (
+                <View key={index} style={styles.insightCard}>
+                  <View style={styles.insightIconContainer}>
+                    <Ionicons name={insight.icon} size={18} color={colors.accent} />
+                  </View>
+                  <View style={styles.insightText}>
+                    <Text style={styles.insightHeading}>{insight.heading}</Text>
+                    <Text style={styles.insightBody}>{insight.body}</Text>
+                  </View>
+                </View>
+              ))}
+            </View>
+          </>
+        )}
+
         <View style={styles.divider} />
 
         <View style={styles.section}>
@@ -113,7 +117,23 @@ export default function FixtureGuideScreen({ route }) {
 
         <View style={styles.section}>
           <Text style={styles.sectionLabel}>How to Read a Result</Text>
-          {explainers.map((item, index) => (
+          {[
+            {
+              icon: 'stats-chart-outline',
+              title: 'The Score',
+              body: 'The first number is the home team\'s goals, the second is the away team\'s. A win earns 3 points in the league, a draw earns 1, and a loss earns 0.',
+            },
+            {
+              icon: 'home-outline',
+              title: 'Home Advantage',
+              body: 'The home team plays in their own stadium with their own fans. Home teams win more often — the crowd creates pressure, and the away team has had to travel.',
+            },
+            {
+              icon: 'arrow-forward-circle-outline',
+              title: 'What Happens Next',
+              body: 'Points accumulate across the whole season. After 38 games, the team with the most points wins the Premier League title. The bottom three teams get relegated to the Championship.',
+            },
+          ].map((item, index) => (
             <View key={index} style={styles.explainerCard}>
               <View style={styles.explainerIconContainer}>
                 <Ionicons name={item.icon} size={18} color={colors.accent} />
@@ -237,6 +257,39 @@ const styles = StyleSheet.create({
     fontSize: typography.sizes.md,
     color: colors.muted,
     lineHeight: 26,
+  },
+  insightCard: {
+    flexDirection: 'row',
+    gap: 14,
+    alignItems: 'flex-start',
+    backgroundColor: colors.surface,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: colors.border,
+    padding: 16,
+  },
+  insightIconContainer: {
+    width: 36,
+    height: 36,
+    borderRadius: 10,
+    backgroundColor: colors.accent + '18',
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexShrink: 0,
+  },
+  insightText: {
+    flex: 1,
+    gap: 6,
+  },
+  insightHeading: {
+    fontSize: typography.sizes.md,
+    fontWeight: typography.weights.bold,
+    color: colors.white,
+  },
+  insightBody: {
+    fontSize: typography.sizes.sm,
+    color: colors.muted,
+    lineHeight: 22,
   },
   termsRow: {
     flexDirection: 'row',
