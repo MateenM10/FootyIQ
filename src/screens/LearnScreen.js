@@ -119,7 +119,7 @@ export default function LearnScreen({ route }) {
                 />
                 <View style={styles.lessonInfo}>
                   <Text style={styles.lessonTitle}>{lesson.title}</Text>
-                  <Text style={styles.lessonMeta}>{lesson.category} · {lesson.duration}</Text>
+                  <Text style={styles.lessonMeta}>{lesson.category}</Text>
                 </View>
                 <Ionicons name="chevron-forward" size={16} color={colors.muted} />
               </Card>

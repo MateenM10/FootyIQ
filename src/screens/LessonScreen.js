@@ -43,10 +43,6 @@ export default function LessonScreen({ route }) {
         <View style={styles.headerText}>
           <SectionLabel>{lesson.category}</SectionLabel>
           <Text style={styles.title}>{lesson.title}</Text>
-          <View style={styles.durationRow}>
-            <Ionicons name="time-outline" size={13} color={colors.muted} />
-            <Text style={styles.duration}>{lesson.duration} read</Text>
-          </View>
         </View>
       </View>
 
@@ -99,15 +95,6 @@ const styles = StyleSheet.create({
     fontWeight: typography.weights.bold,
     color: colors.white,
     lineHeight: 30,
-  },
-  durationRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-  },
-  duration: {
-    fontSize: typography.sizes.sm,
-    color: colors.muted,
   },
   divider: {
     height: 1,
