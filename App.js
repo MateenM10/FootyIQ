@@ -3,6 +3,10 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 import AppNavigator from './src/navigation/AppNavigator'
 import OnboardingScreen from './src/screens/OnboardingScreen'
+import {
+  requestNotificationPermission,
+  scheduleDailyReminder,
+} from './src/services/notifications'
 
 export default function App() {
   const [showOnboarding, setShowOnboarding] = useState(null)
@@ -23,6 +27,13 @@ export default function App() {
   const handleOnboardingDone = async () => {
     await AsyncStorage.setItem('onboardingSeen', 'true')
     setShowOnboarding(false)
+
+    // Request notification permission after onboarding completes.
+    // If granted, schedule the daily 9am reminder straight away.
+    const granted = await requestNotificationPermission()
+    if (granted) {
+      await scheduleDailyReminder()
+    }
   }
 
   if (showOnboarding === null) return null

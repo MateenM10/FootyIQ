@@ -1,5 +1,5 @@
 import {
-  View, Text, StyleSheet, ActivityIndicator
+  View, Text, StyleSheet, ActivityIndicator, Animated
 } from 'react-native'
 import { useNavigation, useFocusEffect } from '@react-navigation/native'
 import { useCallback, useState, useRef, useEffect } from 'react'
@@ -22,6 +22,7 @@ export default function LearnScreen({ route }) {
   const scrollViewRef = useRef(null)
   const sectionOffsets = useRef({})
   const initialTrack = route?.params?.initialTrack
+  const progressAnim = useRef(new Animated.Value(0)).current
 
   useFocusEffect(
     useCallback(() => {
@@ -48,7 +49,15 @@ export default function LearnScreen({ route }) {
     }
   }, [loading, initialTrack])
 
-  const progress = completed.length / lessons.length
+  useEffect(() => {
+    if (!loading) {
+      Animated.timing(progressAnim, {
+        toValue: completed.length / lessons.length,
+        duration: 600,
+        useNativeDriver: false,
+      }).start()
+    }
+  }, [loading, completed.length])
 
   if (loading) {
     return (
@@ -74,7 +83,15 @@ export default function LearnScreen({ route }) {
           </Text>
         </View>
         <View style={styles.progressBarBg}>
-          <View style={[styles.progressBarFill, { width: (progress * 100) + '%' }]} />
+          <Animated.View style={[
+            styles.progressBarFill,
+            {
+              width: progressAnim.interpolate({
+                inputRange: [0, 1],
+                outputRange: ['0%', '100%'],
+              }),
+            },
+          ]} />
         </View>
       </Card>
 
@@ -179,6 +196,7 @@ const styles = StyleSheet.create({
     height: 5,
     backgroundColor: colors.border,
     borderRadius: 4,
+    overflow: 'hidden',
   },
   progressBarFill: {
     height: 5,

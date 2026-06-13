@@ -1,7 +1,8 @@
 import {
   View, Text, StyleSheet,
-  TouchableOpacity, Alert
+  TouchableOpacity, Alert, Switch
 } from 'react-native'
+import { useState, useEffect } from 'react'
 import { Ionicons } from '@expo/vector-icons'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import colors from '../theme/colors'
@@ -9,8 +10,14 @@ import typography from '../theme/typography'
 import ScreenWrapper from '../components/ScreenWrapper'
 import Card from '../components/Card'
 import IconContainer from '../components/IconContainer'
+import {
+  requestNotificationPermission,
+  scheduleDailyReminder,
+  cancelDailyReminder,
+  getNotificationsEnabled,
+} from '../services/notifications'
 
-const SettingsRow = ({ icon, iconColor = colors.accent, label, sub, value, onPress, destructive }) => (
+const SettingsRow = ({ icon, iconColor = colors.accent, label, sub, value, onPress, destructive, right }) => (
   <TouchableOpacity
     style={styles.row}
     onPress={onPress}
@@ -28,14 +35,40 @@ const SettingsRow = ({ icon, iconColor = colors.accent, label, sub, value, onPre
       <Text style={[styles.rowLabel, destructive && styles.destructiveLabel]}>{label}</Text>
       {sub && <Text style={styles.rowSub}>{sub}</Text>}
     </View>
-    {value && <Text style={styles.rowValue}>{value}</Text>}
-    {onPress && !value && (
-      <Ionicons name="chevron-forward" size={16} color={colors.border} />
+    {right ?? (
+      <>
+        {value && <Text style={styles.rowValue}>{value}</Text>}
+        {onPress && !value && (
+          <Ionicons name="chevron-forward" size={16} color={colors.border} />
+        )}
+      </>
     )}
   </TouchableOpacity>
 )
 
 export default function SettingsScreen() {
+  const [notificationsOn, setNotificationsOn] = useState(false)
+
+  useEffect(() => {
+    getNotificationsEnabled().then(setNotificationsOn)
+  }, [])
+
+  const handleNotificationToggle = async (value) => {
+    if (value) {
+      const granted = await requestNotificationPermission()
+      if (!granted) {
+        Alert.alert(
+          'Permission required',
+          'Enable notifications in your device Settings to receive daily reminders.'
+        )
+        return
+      }
+      await scheduleDailyReminder()
+    } else {
+      await cancelDailyReminder()
+    }
+    setNotificationsOn(value)
+  }
 
   const resetProgress = () => {
     Alert.alert(
@@ -86,6 +119,7 @@ export default function SettingsScreen() {
           style: 'destructive',
           onPress: async () => {
             await AsyncStorage.clear()
+            setNotificationsOn(false)
             Alert.alert('Done', 'All data has been cleared.')
           },
         },
@@ -97,6 +131,23 @@ export default function SettingsScreen() {
     <ScreenWrapper edges={['top']} contentStyle={styles.content}>
 
       <Text style={styles.heading}>Settings</Text>
+
+      <Text style={styles.sectionTitle}>Notifications</Text>
+      <Card style={{ overflow: 'hidden' }}>
+        <SettingsRow
+          icon="notifications-outline"
+          label="Daily reminder"
+          sub="Reminds you to complete your daily challenge at 9am"
+          right={
+            <Switch
+              value={notificationsOn}
+              onValueChange={handleNotificationToggle}
+              trackColor={{ false: colors.border, true: colors.accent + '66' }}
+              thumbColor={notificationsOn ? colors.accent : colors.muted}
+            />
+          }
+        />
+      </Card>
 
       <Text style={styles.sectionTitle}>Progress</Text>
       <Card style={{ overflow: 'hidden' }}>

@@ -1,6 +1,6 @@
 import {
   View, Text, StyleSheet,
-  TouchableOpacity, Image, ActivityIndicator, RefreshControl
+  TouchableOpacity, Image, RefreshControl
 } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 import { useState, useEffect } from 'react'
@@ -12,6 +12,7 @@ import ScreenWrapper from '../components/ScreenWrapper'
 import Card from '../components/Card'
 import SectionLabel from '../components/SectionLabel'
 import IconContainer from '../components/IconContainer'
+import SkeletonFixtureCard from '../components/SkeletonFixtureCard'
 
 export default function WatchScreen() {
   const navigation = useNavigation()
@@ -63,9 +64,11 @@ export default function WatchScreen() {
       </Text>
 
       {loading && (
-        <Card style={styles.stateBox}>
-          <ActivityIndicator size="large" color={colors.accent} />
-        </Card>
+        <>
+          <SkeletonFixtureCard />
+          <SkeletonFixtureCard />
+          <SkeletonFixtureCard />
+        </>
       )}
 
       {error && !loading && (
