@@ -1,10 +1,12 @@
 import { generateMatchAnalysis } from '../src/services/matchAnalysis'
 
+// NOTE: scores use the ' - ' format (space-dash-space) that the
+// football API produces and that matchAnalysis.js splits on.
 const makeFixture = (overrides = {}) => ({
   id: 1,
   homeTeam: 'Arsenal',
   awayTeam: 'Chelsea',
-  score: '2-1',
+  score: '2 - 1',
   homeWin: true,
   awayWin: false,
   status: 'FT',
@@ -17,8 +19,11 @@ const makeFixture = (overrides = {}) => ({
 
 describe('generateMatchAnalysis', () => {
   it('returns null when no score is available', () => {
-    const fixture = makeFixture({ score: null })
-    expect(generateMatchAnalysis(fixture)).toBeNull()
+    expect(generateMatchAnalysis(makeFixture({ score: null }))).toBeNull()
+  })
+
+  it('returns null for a malformed score string', () => {
+    expect(generateMatchAnalysis(makeFixture({ score: 'abc' }))).toBeNull()
   })
 
   it('returns exactly 3 insights for a finished match', () => {
@@ -26,12 +31,9 @@ describe('generateMatchAnalysis', () => {
     expect(result).toHaveLength(3)
   })
 
-  it('each insight has icon, heading, and body', () => {
+  it('each insight has string icon, heading, and body', () => {
     const result = generateMatchAnalysis(makeFixture())
     result.forEach(insight => {
-      expect(insight).toHaveProperty('icon')
-      expect(insight).toHaveProperty('heading')
-      expect(insight).toHaveProperty('body')
       expect(typeof insight.icon).toBe('string')
       expect(typeof insight.heading).toBe('string')
       expect(typeof insight.body).toBe('string')
@@ -39,34 +41,36 @@ describe('generateMatchAnalysis', () => {
   })
 
   it('identifies a home win correctly', () => {
-    const result = generateMatchAnalysis(makeFixture({ score: '3-0', homeWin: true, awayWin: false }))
+    const result = generateMatchAnalysis(makeFixture({ score: '3 - 0', homeWin: true, awayWin: false }))
     const headings = result.map(i => i.heading)
-    expect(headings.some(h => /win|won|victory/i.test(h))).toBe(true)
+    expect(headings.some(h => /win|display|comfortable|dominant/i.test(h))).toBe(true)
   })
 
-  it('identifies an away win correctly', () => {
+  it('flags an away win as being on the road', () => {
     const result = generateMatchAnalysis(makeFixture({
-      score: '0-2',
+      score: '0 - 2',
+      homeTeam: 'Arsenal',
+      awayTeam: 'Chelsea',
       homeWin: false,
       awayWin: true,
     }))
-    const bodies = result.map(i => i.body).join(' ')
-    expect(/away/i.test(bodies)).toBe(true)
+    const text = result.map(i => i.heading + ' ' + i.body).join(' ')
+    expect(/away/i.test(text)).toBe(true)
   })
 
-  it('identifies a 0-0 draw', () => {
+  it('identifies a goalless draw', () => {
     const result = generateMatchAnalysis(makeFixture({
-      score: '0-0',
+      score: '0 - 0',
       homeWin: false,
       awayWin: false,
     }))
     const text = result.map(i => i.heading + ' ' + i.body).join(' ')
-    expect(/goalless|0.0|draw/i.test(text)).toBe(true)
+    expect(/goalless|0-0/i.test(text)).toBe(true)
   })
 
   it('identifies a score draw', () => {
     const result = generateMatchAnalysis(makeFixture({
-      score: '2-2',
+      score: '2 - 2',
       homeWin: false,
       awayWin: false,
     }))
@@ -74,15 +78,37 @@ describe('generateMatchAnalysis', () => {
     expect(/draw/i.test(text)).toBe(true)
   })
 
-  it('identifies a clean sheet', () => {
-    const result = generateMatchAnalysis(makeFixture({ score: '2-0', homeWin: true, awayWin: false }))
+  it('awards one point each on a draw', () => {
+    const result = generateMatchAnalysis(makeFixture({
+      score: '1 - 1',
+      homeWin: false,
+      awayWin: false,
+    }))
+    const headings = result.map(i => i.heading).join(' ')
+    expect(/one point/i.test(headings)).toBe(true)
+  })
+
+  it('awards three points on a win', () => {
+    const result = generateMatchAnalysis(makeFixture({ score: '2 - 1' }))
+    const headings = result.map(i => i.heading).join(' ')
+    expect(/three points/i.test(headings)).toBe(true)
+  })
+
+  it('identifies a clean sheet when the loser fails to score', () => {
+    const result = generateMatchAnalysis(makeFixture({ score: '2 - 0', homeWin: true, awayWin: false }))
     const text = result.map(i => i.heading + ' ' + i.body).join(' ')
     expect(/clean sheet/i.test(text)).toBe(true)
   })
 
-  it('identifies both teams scoring', () => {
-    const result = generateMatchAnalysis(makeFixture({ score: '1-1', homeWin: false, awayWin: false }))
+  it('notes both teams scoring when the loser also found the net', () => {
+    const result = generateMatchAnalysis(makeFixture({ score: '3 - 1', homeWin: true, awayWin: false }))
     const text = result.map(i => i.heading + ' ' + i.body).join(' ')
-    expect(/both|scored/i.test(text)).toBe(true)
+    expect(/both teams scored/i.test(text)).toBe(true)
+  })
+
+  it('labels a three-plus goal margin as dominant', () => {
+    const result = generateMatchAnalysis(makeFixture({ score: '4 - 0', homeWin: true, awayWin: false }))
+    const headings = result.map(i => i.heading).join(' ')
+    expect(/dominant/i.test(headings)).toBe(true)
   })
 })

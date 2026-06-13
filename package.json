@@ -22,7 +22,14 @@
     "react-native-screens": "~4.16.0"
   },
   "private": true,
+  "jest": {
+    "preset": "jest-expo",
+    "setupFiles": [
+      "./jest.setup.js"
+    ]
+  },
   "devDependencies": {
-    "@testing-library/react-native": "^14.0.0"
+    "jest": "^29.7.0",
+    "jest-expo": "~54.0.0"
   }
 }
