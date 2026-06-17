@@ -8,7 +8,6 @@ I built FootyIQ to get properly hands-on with React Native, and because most "le
 
 ## Screenshots
 
-> _Swapping in real screenshots here._
 
 | Home | Learn | Daily |
 |------|-------|-------|
