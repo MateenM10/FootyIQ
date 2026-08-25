@@ -1,4 +1,4 @@
-# FootyIQ ⚽
+# FootyIQ
 
 A soccer learning app that actually teaches you the game. The rules, the positions, the tactics, and then it helps you read a real match result like you know what you're looking at.
 
