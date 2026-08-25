@@ -1,13 +1,22 @@
 # FootyIQ ⚽
 
-A soccer learning app that actually teaches you the game — the rules, the positions, the tactics — and then helps you read real match results like you know what you're looking at.
+A soccer learning app that actually teaches you the game. The rules, the positions, the tactics, and then it helps you read a real match result like you know what you're looking at.
 
-I built FootyIQ to get properly hands-on with React Native, and because most "learn football" content online is either too basic or assumes you already know everything. It's a portfolio project, not a commercial app, but I tried to build it like it mattered.
+I built FootyIQ to get properly hands-on with React Native, and honestly because most "learn football" content online is either way too basic or assumes you already know everything. It's a portfolio project, not a commercial app, but I tried to build it like it mattered.
+
+---
+
+## Try it yourself
+
+Install [Expo Go](https://apps.apple.com/app/expo-go/id982107779) on your phone, then scan the QR code below to run FootyIQ directly, no build or setup needed.
+
+![QR code](docs/screenshots/qr-code-footyiq.png)
+
+Or open this link on your phone: [expo.dev/preview/update](https://expo.dev/preview/update?message=Portfolio+demo&updateRuntimeVersion=1.0.0&createdAt=2026-08-25T19%3A30%3A36.342Z&slug=exp&projectId=29c3e43e-0085-4a52-944f-de0cdf8da5be&group=f2376f36-c8b6-4342-9c39-6bac0efa3804)
 
 ---
 
 ## Screenshots
-
 
 | Home | Learn | Daily |
 |------|-------|-------|
@@ -21,12 +30,12 @@ I built FootyIQ to get properly hands-on with React Native, and because most "le
 
 ## What it does
 
-- **Lessons** — 12 of them across 4 tracks (basics, positions, tactics, history), each with a short quiz at the end.
-- **Daily challenge** — one question a day that rotates, with a streak counter so you keep coming back.
-- **Progress** — your completed lessons and streak save locally, and there's an animated progress bar that fills as you go.
-- **Watch** — pulls real Premier League fixtures from API-Football, with pull-to-refresh and a skeleton loader while it fetches.
-- **Match analysis** — every finished match gets a plain-English breakdown of what the result actually means. No jargon. This runs entirely off the score, no AI or paid API.
-- **Glossary** — tap any tactical term anywhere in the app to see what it means.
+- **Lessons.** 12 of them across 4 tracks (basics, positions, tactics, history), each with a short quiz at the end.
+- **Daily challenge.** One question a day that rotates, with a streak counter so you keep coming back.
+- **Progress.** Completed lessons and your streak save locally, and there's an animated progress bar that fills as you go.
+- **Watch.** Pulls real Premier League fixtures from API-Football, with pull to refresh and a skeleton loader while it fetches.
+- **Match analysis.** Every finished match gets a plain English breakdown of what the result actually means. No jargon, and it runs entirely off the score, no AI or paid API involved.
+- **Glossary.** Tap any tactical term anywhere in the app to see what it means.
 
 The Learn, Daily, and Settings sections work without any setup. Only Watch needs an API key.
 
@@ -34,7 +43,7 @@ The Learn, Daily, and Settings sections work without any setup. Only Watch needs
 
 ## Tech
 
-React Native + Expo (SDK 54), React Navigation for the tabs and stacks, AsyncStorage for everything that persists, and API-Football's free tier for live data. Icons are Ionicons, animations use the built-in Animated API, and tests run on Jest via the `jest-expo` preset.
+React Native and Expo (SDK 54), React Navigation for the tabs and stacks, AsyncStorage for everything that persists, and API Football's free tier for live data. Icons are Ionicons, animations use the built in Animated API, and tests run on Jest through the `jest-expo` preset.
 
 ---
 
@@ -42,30 +51,30 @@ React Native + Expo (SDK 54), React Navigation for the tabs and stacks, AsyncSto
 
 ```
 src/
-├── components/   shared UI — Card, ScreenWrapper, IconContainer, etc.
+├── components/   shared UI, Card, ScreenWrapper, IconContainer, etc.
 ├── data/         lessons, quizzes, questions, glossary
 ├── hooks/        useProgress, useStreak
-├── navigation/   tab navigator + Learn/Watch stacks
+├── navigation/   tab navigator plus Learn/Watch stacks
 ├── screens/      one file per screen
 ├── services/     footballApi (fetch + cache), matchAnalysis
-└── theme/        colors + typography tokens
+└── theme/        colors and typography tokens
 ```
 
-A few things I'd point out:
+A few things worth pointing out.
 
-Every screen is built from the same set of components — `Card`, `ScreenWrapper`, `IconContainer`, `SectionLabel`, `PrimaryButton`. Early on I was writing the same styles over and over on each screen, so I pulled the repeated patterns into shared components and refactored everything onto them. Cleaned up a ton of duplicate `StyleSheet` code and made the whole thing look consistent.
+Every screen is built from the same handful of components, Card, ScreenWrapper, IconContainer, SectionLabel, PrimaryButton. I didn't start with that. I wrote a few screens first, noticed I was copying the same card and icon styling into each one, and went back and pulled it all into shared components. Refactoring the whole app onto them cut out a huge amount of duplicated `StyleSheet` code.
 
-Colours and font sizes all live in `src/theme` — no hard-coded hex values scattered around.
+Colors and font sizes all live in `src/theme`, nothing is hard coded into the screens themselves.
 
-The free API tier is rate-limited, so fixtures get cached in AsyncStorage for six hours. Pull-to-refresh ignores the cache when you actually want fresh data.
+The free API tier doesn't let you request just the latest fixtures, so I fetch the whole season once and filter it client side, then cache the result in AsyncStorage for six hours to stay under the rate limit. Pull to refresh skips the cache when you actually want fresh data.
 
-`matchAnalysis.js` is a pure function — give it a score, it gives back the insights. I went rule-based instead of calling some AI API because it's free, instant, and I could actually write tests for it.
+`matchAnalysis.js` is a pure function, give it a score, it hands back the insights. I went rule based instead of calling an AI API for it, mostly because it's free and instant, but also because a pure function is something I could actually write real tests for.
 
 ---
 
 ## Running it
 
-You'll need Node, the Expo Go app on your phone (or a simulator), and a free API-Football key if you want the Watch section.
+You'll need Node, the Expo Go app on your phone (or a simulator), and a free API Football key if you want the Watch section to work.
 
 ```bash
 git clone https://github.com/MateenM10/FootyIQ.git
@@ -74,12 +83,12 @@ cd FootyIQ
 npm install --legacy-peer-deps
 
 cp config.example.js config.js
-# paste your API-Football key into config.js
+# paste your API Football key into config.js
 
 npx expo start
 ```
 
-Then scan the QR code with Expo Go, or hit `i` / `a` for a simulator.
+Then scan the QR code with Expo Go, or hit `i` for the simulator.
 
 ---
 
@@ -89,25 +98,27 @@ Then scan the QR code with Expo Go, or hit `i` / `a` for a simulator.
 npx jest
 ```
 
-The match analysis logic is unit-tested — wins, draws, clean sheets, blowouts, the points context, all of it. It was the cleanest part of the app to test since it's a pure function.
+The match analysis logic has a full unit test suite covering wins, draws, clean sheets, blowouts, and the points context.
+
+One bug the tests actually caught, and this is a good example of why I bothered writing them: my first test file mocked scores as `'2-1'`, no spaces. The real function splits on `' - '`, with spaces on both sides of the dash, because that's the exact format the API returns. So every test was silently getting `null` back and I spent a while confused about why a function I knew worked kept failing. The fix was just matching the real data format in the mocks, but it was a good reminder that a test is only as good as how honestly it represents the real input.
 
 ---
 
 ## What I learned
 
-Most of what I got out of this was the difference between something working and something being built well.
+Most of what I got out of this was the gap between something working and something being built well.
 
-The component refactor was the big one. I didn't start with a shared system — I built a few screens, noticed I was copy-pasting the same card and button styles everywhere, and went back to fix it. Doing that refactor across the whole app taught me more about structuring a UI than any tutorial did.
+The component refactor was the big one, already mentioned above, but it's the thing I'd point to first if someone asked what I actually learned doing this.
 
-Building around the API's limits was the other one. The free tier doesn't let you request just the latest fixtures, so I fetch the whole season once and filter on the client, then cache it to stay under the rate limit. Annoying at first, but figuring out a clean way around it was satisfying.
+Building around the API's limits taught me more than a generous API would have. Figuring out a clean way to cache around the rate limit instead of just hitting it constantly felt like a small real engineering problem, not a tutorial exercise.
 
-I also cut a feature. I had push notifications mostly working before realising they need a native build that doesn't play nice with the simple Expo Go setup I wanted people to be able to clone and run. Pulled it out. Knowing when to drop something is apparently a skill too.
+I also explored push notifications for the daily reminder and ended up cutting them. They technically worked, but `expo-notifications` isn't fully supported in Expo Go anymore, you need a native development build for it to actually fire. That's a heavier setup than I wanted for a project meant to be clonable and runnable in about two minutes, so I pulled the feature rather than ship something that only half works depending on how someone runs the app.
 
 ---
 
 ## Development notes
 
-I used AI tools (Claude) as a pair-programming assistant on this — mostly for talking through architecture decisions, speeding up repetitive refactors, and debugging. Every design decision, the feature scope, and what got cut were mine; I reviewed and understood everything that went in. Felt worth being upfront about, since it's how I actually work.
+I used AI tools (Claude) as a pair programming assistant on this, mostly for talking through architecture decisions, speeding up repetitive refactors, and debugging. The feature scope, what got cut, and every decision in the app were mine, I reviewed and understood everything that went in. Felt worth being upfront about, since it's how I actually work.
 
 ---
 

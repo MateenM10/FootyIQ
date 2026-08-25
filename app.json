@@ -23,7 +23,15 @@
       "package": "com.mateen.footyiq"
     },
     "extra": {
-      "eas": {}
+      "eas": {
+        "projectId": "29c3e43e-0085-4a52-944f-de0cdf8da5be"
+      }
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/29c3e43e-0085-4a52-944f-de0cdf8da5be"
     }
   }
 }
